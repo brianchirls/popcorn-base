@@ -122,13 +122,6 @@
 			},
 			end: function( event, options ) {
 				base.removeClass(options.container, 'active');
-			},
-			_teardown: function( options ) {
-				if (options.container && options.container.parentNode) {
-					var parent = options.container.parentNode;
-					parent.removeChild(options.container);
-					delete options.container;
-				}
 			}
 		};
 	});

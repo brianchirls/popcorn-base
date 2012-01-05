@@ -16,6 +16,7 @@ argument names and behaviors.
 - Create container element, maintaining time order in DOM
 - Clean up plugin definition, filling in a "nop" for missing events
 - Provide access to normalized data for certain arguments
+- Automatically clean up container element on `_teardown`
 - Utility: parse out array/object arguments from JSON or delimited strings
 - Utility: cross-browser addClass/removeClass shim (no external libraries required)
 
@@ -24,7 +25,6 @@ argument names and behaviors.
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
 - Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
-- Automatically remove container element on `_teardown`
 
 ## Usage
 

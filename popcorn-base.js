@@ -299,9 +299,10 @@
 			};
 		}
 
-		teardownFn = definition.end;
+		teardownFn = definition._teardown;
 		if (typeof teardownFn === 'function') {
 			definition._teardown = function(options) {
+				var parent;
 				if (typeof me.onTeardown === 'function') {
 					try {
 						me.onTeardown.call(me, options);
@@ -310,15 +311,28 @@
 					}
 				}
 				teardownFn.call(me, options);
+				if (options.container && options.container.parentNode) {
+					parent = options.container.parentNode;
+					parent.removeChild(options.container);
+					delete options.container;
+					delete me.container;
+				}
 			};
 		} else {
 			definition._teardown = function(options) {
+				var parent;
 				if (typeof me.onTeardown === 'function') {
 					try {
 						me.onTeardown(options);
 					} catch (e) {
 						logError(e);
 					}
+				}
+				if (options.container && options.container.parentNode) {
+					parent = options.container.parentNode;
+					parent.removeChild(options.container);
+					delete options.container;
+					delete me.container;
 				}
 			};
 		}	
