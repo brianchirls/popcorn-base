@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Popcorn Base Plugin Example</title>
+		<script type="text/javascript" src="../external/popcorn.js"></script>
+		<script type="text/javascript" src="../popcorn-base.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.words.js"></script>
+		<style>
+			#video-container {
+				margin: 0 auto;
+				width: 800px;
+				position: relative;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="video-container">
+			<video id="video" width="800" height="450" preload controls="controls" poster="http://mozillapopcorn.org/wp-content/themes/popcorn/images/poster.png" >
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
+				<source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
+			</video>
+		</div>
+		<script type="text/javascript">
+		(function(){
+			var popcorn = Popcorn('#video');
+			popcorn.words({
+				start: 1,
+				end: 10,
+				target: 'video-container',
+				text: 'Hi there',
+				top: '10%',
+				left: '10%',
+				classes: 'one,two three'
+			});
+		}());
+		</script>
+	</body>
+</html>
