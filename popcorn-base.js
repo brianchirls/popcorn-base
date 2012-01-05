@@ -414,35 +414,35 @@
 		};
 	} else {
 		PopcornBaseEvent.prototype.addClass = function(element, classes) {
-			var c;
+			var c, i;
 
 			if (!element || !element.classList) {
 				return;
 			}
 
-			if (classes.join) {
-				c = classes.join(' ');
-			} else {
-				c = classes;
-			}
+			c = this.toArray(classes, /[\s\t\r\n ]/);
 
-			element.classList.add(c);
+			for (i = 0; i < c.length; i++) {
+				try {
+					element.classList.add(c[i]);
+				} catch (e) {}
+			}
 		};
 
 		PopcornBaseEvent.prototype.removeClass = function(element, classes) {
-			var c;
+			var c, i;
 
 			if (!element || !element.classList) {
 				return;
 			}
 
-			if (classes.join) {
-				c = classes.join(' ');
-			} else {
-				c = classes;
-			}
+			c = this.toArray(classes, /[\s\t\r\n ]/);
 
-			element.classList.remove(c);
+			for (i = 0; i < c.length; i++) {
+				try {
+					element.classList.remove(c[i]);
+				} catch (e) {}
+			}
 		};
 	}
 
