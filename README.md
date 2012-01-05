@@ -24,6 +24,7 @@ argument names and behaviors.
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
 - Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
+- Automatically remove container element on `_teardown`
 
 ## Usage
 
