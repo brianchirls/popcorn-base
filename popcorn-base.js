@@ -100,18 +100,11 @@
 		this.popcorn = popcorn;
 		this.pluginName = basePlugin.name;
 
-		//get target (required)
-		this.target = options.target;
-		if (typeof this.target === 'string') {
+		//get target
+		if (typeof options.target === 'string') {
 			this.target = document.getElementById(this.target);
-			
-			if (!this.target) {
-				return;
-			}
-		}
-
-		if (!options.target) {
-			return;
+		} else if (options.target instanceof window.HTMLElement) {
+			this.target = options.target;
 		}
 
 		//add to Plugin's queue of events
