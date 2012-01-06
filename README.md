@@ -12,7 +12,7 @@ argument names and behaviors.
 ## Features
 
 - Event callbacks added to `_setup`, `start`, `end`, `frame` and `_teardown`
-- Discover target element (required)
+- Discover target element
 - Create container element, maintaining time order in DOM
 - Clean up plugin definition, filling in a "nop" for missing events
 - Provide access to normalized data for certain arguments
