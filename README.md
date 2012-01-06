@@ -117,27 +117,27 @@ methods.
 
 #### Properties
 
-##### `options`
+##### options
 
 The original `options` object passed to event creation. This object
 remains unchanged.
 
-##### `target`
+##### target
 
 An `HTMLElement` representing the target element in which to place
 the event's container. If the original `options.target` is a string,
 Base Plugin will search for an event with that id attribute. If no
 element is found, `.target` will be undefined.
 
-##### `container`
+##### container
 
 Element created by `makeContainer`, if any.
 
-##### `pluginName`
+##### pluginName
 
 The name with which the plugin is registered on the global Popcorn object.
 
-##### `onSetup`, `onStart`, `onFrame`, `onEnd` and `onTeardown`
+##### onSetup, onStart, onFrame, onEnd, onTeardown
 
 A reference to the function representing the respective callback. If the
 original was a string, this is the resolved function. If no function was
@@ -145,7 +145,7 @@ found or the original is of the wrong type, this is undefined.
 
 #### Methods
 
-##### `makeContainer (tag, insert)`
+##### makeContainer (tag, insert)
 
 Creates a container element, which is set as the `container` property of 
 the `BasePluginEvent` and returned by this method. The container element
@@ -174,7 +174,7 @@ prevent the insertion of the container element into the DOM.
 		/* etc.... */
 	});
 
-##### `toArray (data, delimiters)` [static]
+##### toArray (data, delimiters) [static]
 
 A static utility method for retrieving an array from an input of
 undetermined type. First argument `data` may be an array, a JSON string,
@@ -186,13 +186,13 @@ If `data` is a string and the second argument `delimiters` is specified,
 it will be used to split the string into an array. This should be a
 string or RegExp, as per Javascript's [String.split](https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/split).
 
-##### `toObject (data)` [static]
+##### toObject (data) [static]
 
 A static utility method for retriving an object. If `data` argument is
 a JSON string, it will be parsed and the result will be returned.
 Otherwise, `data` will be returned unchanged.
 
-##### `addClass (element, classes)` [static]
+##### addClass (element, classes) [static]
 
 A utility for adding one or more classes to a DOM element. This method wraps (or polyfills) [`classList.add`](https://developer.mozilla.org/en/DOM/element.classList).
 Unlike `classList.add`, `classes` can be an array or a string delimited
@@ -202,7 +202,7 @@ Though most desktop browsers that support HTML5 video also support
 `classList` natively, it is still (missing)[http://caniuse.com/#search=classlist] from Internet Explorer
 and iOS before v5.0, so a polyfill is provided.
 
-##### `removeClass (element, classes)` [static]
+##### removeClass (element, classes) [static]
 
 Similar to `addClass`, but removes any classes specified in the second
 argument.
