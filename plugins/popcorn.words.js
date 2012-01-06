@@ -118,10 +118,10 @@
 
 		return {
 			start: function( event, options ) {
-				base.addClass(options.container, 'active');
+				base.addClass(base.container, 'active');
 			},
 			end: function( event, options ) {
-				base.removeClass(options.container, 'active');
+				base.removeClass(base.container, 'active');
 			}
 		};
 	});

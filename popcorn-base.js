@@ -178,7 +178,6 @@
 				this.target.insertBefore(this.container, nextElement);
 			}
 			
-			this.options.container = this.container;
 			return this.container;
 		};
 
