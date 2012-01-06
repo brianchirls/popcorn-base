@@ -103,6 +103,9 @@
 		//get target
 		if (typeof options.target === 'string') {
 			this.target = document.getElementById(options.target);
+			if (!this.target) {
+				delete this.target;
+			}
 		} else if (options.target instanceof window.HTMLElement) {
 			this.target = options.target;
 		}
