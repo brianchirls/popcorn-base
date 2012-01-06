@@ -206,3 +206,6 @@ and iOS before v5.0, so a polyfill is provided.
 
 Similar to `addClass`, but removes any classes specified in the second
 argument.
+
+## License
+Popcorn Base Plugin is made available under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
