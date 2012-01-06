@@ -102,7 +102,7 @@
 
 		//get target
 		if (typeof options.target === 'string') {
-			this.target = document.getElementById(this.target);
+			this.target = document.getElementById(options.target);
 		} else if (options.target instanceof window.HTMLElement) {
 			this.target = options.target;
 		}
@@ -183,6 +183,9 @@
 		//todo: validate that 'plugin' is a function
 		//todo: try/catch all event functions
 		definition = basePlugin.pluginFn.call(popcorn, options, this);
+		if (!definition) {
+			definition = PopcornBaseEvent.prototype.nop;
+		}
 		
 		setupFn = definition._setup;
 		if (typeof setupFn === 'function') {
@@ -346,6 +349,9 @@
 		
 		try {
 			out = JSON.parse(data);
+			if (Object.prototype.toString.call(out) !== '[object Array]') {
+				out = [out];
+			}
 		} catch (e) {
 			out = data;
 		}
