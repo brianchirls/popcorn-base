@@ -15,7 +15,7 @@
 			textContainer,
 			text, node, i;
 		
-		if (!options.text) {
+		if (!base.target || !options.text) {
 			return;
 		}
 
