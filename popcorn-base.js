@@ -399,9 +399,9 @@
 				return;
 			}
 
-			classes = this.toArray(classes, /[\s\t\r\n ]/);
+			classes = this.toArray(classes, /[\s\t\r\n ]+/);
 			curClasses = element.getAttribute('class') || '';
-			curClasses = curClasses.split(/[\s\t\r\n ]/);
+			curClasses = curClasses.split(/[\s\t\r\n ]+/);
 			
 			for (i = 0; i < classes.length; i++) {
 				if (curClasses.indexOf(classes[i]) < 0) {
@@ -419,7 +419,7 @@
 				return;
 			}
 
-			classes = this.toArray(classes, /\s\t\r\n /);
+			classes = this.toArray(classes, /[\s\t\r\n ]+/);
 			curClasses = element.getAttribute('class') || '';
 			curClasses = curClasses.split(/[\s\t\r\n ]+/);
 
@@ -440,7 +440,7 @@
 				return;
 			}
 
-			c = this.toArray(classes, /[\s\t\r\n ]/);
+			c = this.toArray(classes, /[\s\t\r\n ]+/);
 
 			for (i = 0; i < c.length; i++) {
 				try {
@@ -456,7 +456,7 @@
 				return;
 			}
 
-			c = this.toArray(classes, /[\s\t\r\n ]/);
+			c = this.toArray(classes, /[\s\t\r\n ]+/);
 
 			for (i = 0; i < c.length; i++) {
 				try {
