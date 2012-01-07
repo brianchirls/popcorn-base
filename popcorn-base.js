@@ -316,10 +316,9 @@
 					}
 				}
 				teardownFn.call(me, options);
-				if (options.container && options.container.parentNode) {
-					parent = options.container.parentNode;
-					parent.removeChild(options.container);
-					delete options.container;
+				if (me.container && me.container.parentNode) {
+					parent = me.container.parentNode;
+					parent.removeChild(me.container);
 					delete me.container;
 				}
 			};
@@ -333,10 +332,9 @@
 						logError(e);
 					}
 				}
-				if (options.container && options.container.parentNode) {
-					parent = options.container.parentNode;
-					parent.removeChild(options.container);
-					delete options.container;
+				if (me.container && me.container.parentNode) {
+					parent = me.container.parentNode;
+					parent.removeChild(me.container);
 					delete me.container;
 				}
 			};
