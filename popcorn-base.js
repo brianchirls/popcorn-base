@@ -83,7 +83,7 @@
 			setupFn, startFn, frameFn, endFn, teardownFn,
 			me = this, instanceId, allEvents,
 			basePopcorn = BasePopcorn(popcorn),
-			definition = PopcornBaseEvent.prototype.nop;
+			definition;
 		
 		function getCallbackFunction(fn) {
 			if (fn && typeof fn === 'string') {
@@ -162,14 +162,17 @@
 				if (allEvents) {
 					for (i = allEvents.length - 1; i >= 0; i--) {
 						evt = allEvents[i].options;
-						if (evt.start <= this.options.start ||
-							(evt.start === this.options.start && evt.end <= this.options.end)) {
+						if (evt.start < this.options.start ||
+							(evt.start === this.options.start && evt.end < this.options.end)) {
 							
 							break;
 						}
 					}
 
-					i++;					
+					i++;
+					if (allEvents[i] === this) {
+						i++;
+					}
 					if (i < allEvents.length) {
 						nextElement = allEvents[i].container || null;
 					}
@@ -186,9 +189,13 @@
 		//todo: try/catch all event functions
 		definition = basePlugin.pluginFn.call(popcorn, options, this);
 		if (!definition) {
-			definition = PopcornBaseEvent.prototype.nop;
+			definition = {};
 		}
-		
+/*
+		if (!definition.start) {
+			definition.start = this.nop;
+		}
+*/		
 		setupFn = definition._setup;
 		if (typeof setupFn === 'function') {
 			definition._setup = function(options) {
@@ -461,11 +468,7 @@
 		};
 	}
 
-	PopcornBaseEvent.prototype.nop = {
-		start: function() {
-		},
-		end: function() {
-		}
+	PopcornBaseEvent.prototype.nop = function() {
 	};
 
 	// non-static methods
