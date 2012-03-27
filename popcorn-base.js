@@ -215,7 +215,7 @@
 			var prop,
 				opt,
 				from, to, unit,
-				regex = /(\d(\.\d*)?)(.*)/;
+				regex = /(\-?\d+(\.\d*)?)(.*)/;
 
 			if (!name || !options[name]) {
 				return false;
@@ -341,7 +341,7 @@
 		if (typeof frameFn === 'function') {
 			definition.frame = function(event, options, time) {
 				if (started) {
-					updateAnimations.call(me, time / (me.options.end - me.options.start));
+					updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
 					frameFn.call(me, event, options, time);
 					if (typeof me.onFrame === 'function') {
 						try {
@@ -355,7 +355,7 @@
 		} else {
 			definition.frame = function(event, options, time) {
 				if (started) {
-					updateAnimations.call(me, time / (me.options.end - me.options.start));
+					updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
 					if (typeof me.onFrame === 'function') {
 						try {
 							me.onFrame(options);
