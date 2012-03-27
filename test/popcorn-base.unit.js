@@ -303,6 +303,121 @@ test('makeContainer', function() {
 	Popcorn.removePlugin('test');
 });
 
+module('Animation');
+test('animate', function() {
+
+	var popcorn, exp = 3;
+
+	Popcorn.basePlugin('test', function(options, base) {
+		var ret = base.animate('prop');
+		ok(ret, 'base.animate returns true when successful');
+		return {
+			start: function(event, options) {
+				equal(this.options.prop, '1px', 'Animated property has correct value at start');
+			},
+			frame: function(event, options, t) {
+				exp++;
+				expect(exp); //can't predict how many times frame will run
+				equal(this.options.prop, '1.25px', 'Animated property has correct value at frame');
+			},
+			end: function(event, options) {
+				equal(this.options.prop, '2px', 'Animated property has correct value at end');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.25);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: {
+			from: '1px', to: '2%'
+		}
+	});
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
+test('animated property with non-animated value', function() {
+
+	var popcorn, exp = 2;
+
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.animate('prop');
+		return {
+			start: function(event, options) {
+				equal(this.options.prop, 10, 'Animated property has correct value at start');
+			},
+			frame: function(event, options, t) {
+				equal(this.options.prop, 10, 'Animated property has correct value at frame');
+				exp++;
+				expect(exp); //can't predict how many times frame will run
+			},
+			end: function(event, options) {
+				equal(this.options.prop, 10, 'Animated property has correct value at end');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.25);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: 10
+	});
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
+test('animate with callback', function() {
+
+	var popcorn, exp = 2;
+
+	Popcorn.basePlugin('test', function(options, base) {
+		var value;
+		base.animate('prop', function(val) {
+			value = val;
+		});
+		return {
+			start: function(event, options) {
+				equal(value, '2px', 'Animated value has correct value at start');
+			},
+			frame: function(event, options, t) {
+				equal(value, '1.75px', 'Animated value has correct value at frame');
+				exp++;
+				expect(exp); //can't predict how many times frame will run
+			},
+			end: function(event, options) {
+				equal(value, '1px', 'Animated value has correct value at end');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.25);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: {
+			from: '2px', to: '1%'
+		}
+	});
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
 module('Utilities');
 test('toArray', function() {
 	var popcorn,
