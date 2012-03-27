@@ -10,6 +10,11 @@
 				margin: 0 auto;
 				width: 800px;
 				position: relative;
+				overflow: hidden;
+			}
+
+			.popcorn-words {
+				white-space: pre;
 			}
 			
 		</style>
@@ -24,15 +29,30 @@
 		</div>
 		<script type="text/javascript">
 		(function(){
-			var popcorn = Popcorn('#video');
+			var popcorn = Popcorn('#video', {
+				frameAnimation: true
+			});
 			popcorn.words({
 				start: 1,
-				end: 10,
+				end: 5,
 				target: 'video-container',
 				text: 'Hi there',
 				top: '10%',
 				left: '10%',
 				classes: 'one,two three'
+			});
+
+			popcorn.words({
+				start: 2,
+				end: 8,
+				target: 'video-container',
+				text: 'Popcorn.js is animated!',
+				top: '40%',
+				left: {
+					from: '100%',
+					to: '-40%'
+				},
+				style: 'font-size: 2em'
 			});
 		}());
 		</script>
