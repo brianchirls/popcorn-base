@@ -188,6 +188,7 @@ the unit for `from` is used. If the parameter is not an object, it is set but no
 Note: parameters cannot be animated unless Popcorn is given the `frameAnimation` option.
 
 Plugins are provided animated values as follows:
+
 	var popcorn = Popcorn('#video', {
 		frameAnimation: true //don't forget this
 	});
