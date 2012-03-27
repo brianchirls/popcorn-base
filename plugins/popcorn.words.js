@@ -74,6 +74,20 @@
 			container.style.bottom = i;
 			container.style.position = 'absolute';
 		}
+
+		base.animate('top', function(val) {
+			container.style.top = val;
+		});
+		base.animate('left', function(val) {
+			container.style.left = val;
+		});
+		base.animate('right', function(val) {
+			container.style.right = val;
+		});
+		base.animate('bottom', function(val) {
+			container.style.bottom = val;
+		});
+
 		
 		if (options.align) {
 			container.style.textAlign = options.align;
