@@ -309,7 +309,7 @@ test('animate', function() {
 	var popcorn, exp = 3;
 
 	Popcorn.basePlugin('test', function(options, base) {
-		var ret = base.animate('prop');
+		var eventId, ret = base.animate('prop');
 		ok(ret, 'base.animate returns true when successful');
 		return {
 			start: function(event, options) {
@@ -338,13 +338,16 @@ test('animate', function() {
 		}
 	});
 
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
+
 	popcorn.destroy();
 	Popcorn.removePlugin('test');
 });
 
 test('animated property with non-animated value', function() {
 
-	var popcorn, exp = 2;
+	var popcorn, exp = 2, eventId;
 
 
 	Popcorn.basePlugin('test', function(options, base) {
@@ -374,13 +377,16 @@ test('animated property with non-animated value', function() {
 		prop: 10
 	});
 
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
+
 	popcorn.destroy();
 	Popcorn.removePlugin('test');
 });
 
 test('animate with callback', function() {
 
-	var popcorn, exp = 2;
+	var popcorn, exp = 2, eventId;
 
 	Popcorn.basePlugin('test', function(options, base) {
 		var value;
@@ -413,6 +419,9 @@ test('animate with callback', function() {
 			from: '2px', to: '1%'
 		}
 	});
+
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
 
 	popcorn.destroy();
 	Popcorn.removePlugin('test');
