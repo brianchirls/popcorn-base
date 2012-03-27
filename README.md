@@ -1,7 +1,7 @@
 # Popcorn.js Base Plugin
 
 Popcorn.js Base Plugin is a wrapper for creating Popcorn plugins that
-conform to the [Best Practices](http://popcornjs.org/API/best-practices)
+conform to the [Best Practices](https://docs.google.com/document/pub?id=17f6iSpXM_pZ8Wj6rirHpLnt2fpCtTnpQxzvVoibOJio&pli=1)
 guide. The goals of the Best Practices are to provide the best user
 experience, to empower authors who may or may not have advanced
 programming skills and to make plugins general and reusable.
