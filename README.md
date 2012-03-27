@@ -15,6 +15,7 @@ argument names and behaviors.
 - Discover target element
 - Clean up plugin definition, filling in a "nop" for missing events
 - Create container element, maintaining time order in DOM
+- Easily animate parameters in `frame` method
 - Provide access to normalized data for certain arguments
 - Automatically clean up container element on `_teardown`
 - Utility: parse out array/object arguments from JSON or delimited strings
@@ -22,6 +23,7 @@ argument names and behaviors.
 
 ### Roadmap:
 - Display/hide container elements using CSS classes rather than element style
+- Add tweening and keyframing to animated parameters
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
 - Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
@@ -170,6 +172,71 @@ prevent the insertion of the container element into the DOM.
 		base.container.appendChild(
 			document.createTextNode(options.text || '')
 		);
+		
+		/* etc.... */
+	});
+
+##### animate (param, options)
+
+Specifies a given options parameter as one that can be animated.
+
+Authors can specify start and end values by setting the parameter as an object with
+the properties `from` and `to`. Values must be a number, optionally followed by a unit
+(e.g. px, em, %, s). Mixed units are ignored, so if the two values have different units,
+the unit for `from` is used. If the parameter is not an object, it is set but not animated.
+
+Note: parameters cannot be animated unless Popcorn is given the `frameAnimation` option.
+
+Plugins are provided animated values as follows:
+	var popcorn = Popcorn('#video', {
+		frameAnimation: true //don't forget this
+	});
+	popcorn.myplugin({
+		start: 0,
+		end: 1,
+		top: {
+			from: '10px',
+			to: '50px'
+		}
+	})
+
+To animate a parameter, call `base.animate` in the plugin definition with the first parameter
+as the name of the option. All options will be provided in `base.options` with the correct values
+at any given time.
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		base.animate('top');
+		
+		/* etc.... */
+
+		return {
+			/* etc.... */
+			frame: function(event, options, time) {
+				this.container.style.top = this.options.top;
+			}
+		}
+	});
+
+Optionally, `animate` can take a second argument specifying options. Currently, the only option
+available is `callback`, which specifies a function to be called with the current value whenever
+it is animated.
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		base.animate('top', {
+			callback: function(val) {
+				this.container.style.top = val;
+			}
+		});
+
+		/* etc.... */
+	});
+
+As an alternate syntax, it is possible to simply pass the callback function in place of an object.
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		base.animate('top', function(val) {
+			this.container.style.top = val;
+		});
 		
 		/* etc.... */
 	});
