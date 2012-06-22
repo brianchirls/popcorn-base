@@ -15,6 +15,7 @@ argument names and behaviors.
 - Discover target element
 - Clean up plugin definition, filling in a "nop" for missing events
 - Create container element, maintaining time order in DOM
+- Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
 - Easily animate parameters in `frame` method
 - Provide access to normalized data for certain arguments
 - Automatically clean up container element on `_teardown`
@@ -26,7 +27,6 @@ argument names and behaviors.
 - Add tweening and keyframing to animated parameters
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
-- Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
 
 ## Usage
 
@@ -238,6 +238,49 @@ As an alternate syntax, it is possible to simply pass the callback function in p
 		base.animate('top', function(val) {
 			this.container.style.top = val;
 		});
+		
+		/* etc.... */
+	});
+
+##### position (options)
+
+Positions container (or other) element if any of 'top', 'left', 'bottom' or 'right' is specified. The given position parameters will be attached to the element's CSS style, and the element will be set to `position: absolute`.
+
+`position` accepts one optional argument, which can take a number of forms. There are currently two options: `element`, which takes a DOM Element as the element to animate; and `animate`, which determines whether positioning is automatically animated (by the `animate` method).
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		/* etc.... */
+
+		var e = document.createElement('div');
+
+		base.position({
+			element: e,
+			animate: true
+		});
+		
+		/* etc.... */
+	});
+
+By default, `animate` is assumed to be false unless specified. If `element` is not specified, the positioning will be applied to the container element, but only if one has been created by `makeContainer` before calling `position`. If no element is specified and the container has not been set, `position` will have no effect.
+
+As a shorthand, if `position` is passed a boolean value, the argument will set `animate`:
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		base.makeContainer();
+
+		base.position(true); //animate the container position
+		
+		/* etc.... */
+	});
+
+If only a DOM Element is passed, it will be used as the element, and `animate` will be false:
+
+	Popcorn.basePlugin('myplugin', function(options, base) {
+		/* etc.... */
+
+		var e = document.createElement('div');
+
+		base.position(e); //position e, but no animation
 		
 		/* etc.... */
 	});

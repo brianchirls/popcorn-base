@@ -208,6 +208,84 @@
 			return this.container;
 		};
 
+		this.position = function(opts) {
+			var pos, e, abs = false;
+
+			if (opts instanceof window.HTMLElement) {
+				opts = {
+					element: opts
+				};
+			} else if (opts === true || opts === false) {
+				opts = {
+					animate: opts
+				};
+			} else if (typeof opts !== 'object') {
+				opts = {};
+			}
+			if (!opts.element && this.container) {
+				opts.element = this.container;
+			}
+			if (!opts.element) {
+				return;
+			}
+			e = opts.element;
+
+			pos = options.top;
+			if (pos || pos === 0) {
+				if (!isNaN(pos)) {
+					pos += 'px';
+				}
+				e.style.top = pos;
+				abs = true;
+			}
+
+			pos = options.left;
+			if (pos || pos === 0) {
+				if (!isNaN(pos)) {
+					pos += 'px';
+				}
+				e.style.left = pos;
+				abs = true;
+			}
+			
+			pos = options.right;
+			if (pos || pos === 0) {
+				if (!isNaN(pos)) {
+					pos += 'px';
+				}
+				e.style.right = pos;
+				abs = true;
+			}
+			
+			pos = options.bottom;
+			if (pos || pos === 0) {
+				if (!isNaN(pos)) {
+					pos += 'px';
+				}
+				e.style.bottom = pos;
+				abs = true;
+			}
+
+			if (abs) {
+				e.style.position = 'absolute';
+			}
+
+			if (opts.animate) {
+				this.animate('top', function(val) {
+					e.style.top = val;
+				});
+				this.animate('left', function(val) {
+					e.style.left = val;
+				});
+				this.animate('right', function(val) {
+					e.style.right = val;
+				});
+				this.animate('bottom', function(val) {
+					e.style.bottom = val;
+				});
+			}
+		};
+
 		/*
 		animate method will animate any given properties of the `options` object
 		if `callback` option is provided, will call that on every frame
