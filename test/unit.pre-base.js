@@ -7,5 +7,6 @@
 	}
 	
 	window.popcornProperties = popcornProperties;
+	window.QUnit.config.autostart = false;
 
 }(window, Popcorn));

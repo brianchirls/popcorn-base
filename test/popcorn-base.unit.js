@@ -1,6 +1,10 @@
 //not gonna be annoying
 window.addEventListener('DOMContentLoaded', function() {
-	document.getElementById('video').muted = true;
+	var video = document.getElementById('video');
+	video.muted = true;
+	video.addEventListener('loadedmetadata', function() {
+		QUnit.start();
+	}, false);
 }, false);
 
 module('Core');
