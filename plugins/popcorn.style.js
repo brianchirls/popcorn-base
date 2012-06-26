@@ -4,7 +4,7 @@
 
 	"use strict";
 
-	Popcorn.basePlugin( 'style' , function(options, base) {
+	Popcorn.basePlugin('style', function (options, base) {
 		if (!base.target) {
 			base.target = this.media;
 		}
@@ -17,4 +17,4 @@
 			base.addClass(base.target, options.classes);
 		}
 	});
-}( Popcorn ));
+}(Popcorn));

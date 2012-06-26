@@ -5,8 +5,8 @@
  * Copyright 2012, Brian Chirls
  * Licensed under the MIT license
  */
- 
- (function (window, Popcorn) {
+
+(function (window, Popcorn) {
 	"use strict";
 
 	var document = window.document,
@@ -27,7 +27,7 @@
 			console.log(err.stack || err.stacktrace || err.message || err);
 		}
 	}
-	
+
 	BasePopcorn = function(popcorn) {
 		var base;
 		if (window === this || !(this instanceof BasePopcorn) ) {
@@ -303,9 +303,8 @@
 						if (nums.length > 3) {
 							nums[3] /= 255;
 							return 'rgba(' + nums.join(',') + ')';
-						} else {
-							return 'rgb(' + nums.join(',') + ')';
 						}
+						return 'rgb(' + nums.join(',') + ')';
 					}
 
 					if (typeof str !== 'string') {
@@ -430,7 +429,9 @@
 				if (!keyframes.length) {
 					me.options[name] = opt;
 					return false;
-				} else if (keyframes.length === 1) {
+				}
+
+				if (keyframes.length === 1) {
 					me.options[name] = keyframes[0].val;
 					return false;
 				}
@@ -504,7 +505,9 @@
 					animated = animateStyle(i, name) || animated;
 				}
 				return animated;
-			} else if (opts instanceof window.HTMLElement) { //todo: or element could be member of opts
+			}
+
+			if (opts instanceof window.HTMLElement) { //todo: or element could be member of opts
 				return animateStyle(name, opts);
 			}
 
@@ -974,7 +977,7 @@
 			return t === 1 ? 1 : -Math.pow(2, -10 * t) + 1;
 		},
 		/*
-		todo: circular, elastic, back
+		todo: circular, elastic, back, swing
 		*/
 		'bounce': function(gravity, bounce) {
 			//http://www.sosmath.com/calculus/geoser/bounce/bounce.html
@@ -991,7 +994,7 @@
 			bounces = [{
 				t0: 0,
 				h: 1,
-				t: Math.sqrt(2 * 1 / gravity),
+				t: Math.sqrt(2 / gravity),
 				x0: 0
 			}];
 
