@@ -5,10 +5,12 @@
 		<script type="text/javascript" src="../external/popcorn.js"></script>
 		<script type="text/javascript" src="../popcorn-base.js"></script>
 		<script type="text/javascript" src="../plugins/popcorn.words.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.style.js"></script>
 		<style>
 			#video-container {
 				margin: 0 auto;
 				width: 800px;
+				height: 450px;
 				position: relative;
 				overflow: hidden;
 			}
@@ -32,6 +34,24 @@
 			var popcorn = Popcorn('#video', {
 				frameAnimation: true
 			});
+			
+			popcorn.style({
+				start: 0,
+				end: 10,
+				top: {
+					'from': '-300px',
+					'.8': '0px',
+					timing: 'bounce(200)'
+				},
+				'-moz-transform': {
+					'0': 'rotate(0deg) scale(1)',
+					'0.8': 'rotate(0deg) scale(1)',
+					'0.9': 'rotate(180deg) scale(0)',
+					to: 'rotate(360deg) scale(1)'
+				}
+			});
+			
+
 			popcorn.words({
 				start: 1,
 				end: 5,
@@ -41,19 +61,28 @@
 				left: '10%',
 				classes: 'one,two three'
 			});
-
+/*
 			popcorn.words({
-				start: 2,
-				end: 8,
+				start: 0,
+				end: 10,
 				target: 'video-container',
 				text: 'Popcorn.js is animated!',
-				top: '40%',
+				//top: '40%',
+				
 				left: {
-					from: '100%',
-					to: '-40%'
+					to: '40%',
+					from: '0%',
+					timing: 'linear'
+					//timing: 'cubic-bezier(0.42, 0.0, 0.58, 1.0)'
+				},
+				top: {
+					0: '10%',
+					1: '90%',
+					timing: 'bounce(200)'
 				},
 				style: 'font-size: 2em'
 			});
+*/
 		}());
 		</script>
 	</body>
