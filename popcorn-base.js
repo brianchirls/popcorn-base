@@ -976,17 +976,17 @@
 		'ease-in-out-power': function(power) {
 			function f(t) {
 				if (t < 0.5) {
-					return 0.5 * Math.pow(t * 2, 2);
+					return 0.5 * Math.pow(t * 2, power);
 				}
 
-				return -0.5 * (Math.pow(t * 2 - 2, power) - 2);
+				return -0.5 * (Math.pow(Math.abs(t * 2 - 2), power) - 2);
 			}
 
 			return f;
 		},
 		'ease-out-power': function(power) {
 			function f(t) {
-				return 1 - Math.pow(t - 1, power);
+				return 1 - Math.pow(Math.abs(t - 1), power);
 			}
 
 			return f;
@@ -1085,16 +1085,16 @@
 
 			return f;
 		},
-		'ease-in-out-circ': function() {
+		'ease-out-circ': function() {
 			function f(t) {
 				return Math.sqrt(1 - Math.pow(t - 1, 2));
 			}
 
 			return f;
 		},
-		'ease-out-circ': function() {
+		'ease-in-out-circ': function() {
 			function f(t) {
-				if(t < 2) {
+				if(t < 0.5) {
 					return -0.5 * (Math.sqrt(1 - Math.pow(t * 2, 2)) - 1);
 				}
 
