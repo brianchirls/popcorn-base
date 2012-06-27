@@ -419,7 +419,14 @@ asyncTest('animated property with multiple keyframes', function() {
 			},
 			end: function(event, options) {
 				equal(this.options.prop, 9, 'Animated property has correct value at end');
-				start();
+				setTimeout(function() {
+					eventId = popcorn.getLastTrackEventId();
+					popcorn.removeTrackEvent(eventId);
+
+					popcorn.destroy();
+					Popcorn.removePlugin('test');
+					start();
+				}, 0);
 			}
 		};
 	});
@@ -438,11 +445,6 @@ asyncTest('animated property with multiple keyframes', function() {
 		}
 	});
 
-	eventId = popcorn.getLastTrackEventId();
-	popcorn.removeTrackEvent(eventId);
-
-	popcorn.destroy();
-	Popcorn.removePlugin('test');
 });
 
 test('animate color', function() {
