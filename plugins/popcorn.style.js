@@ -16,5 +16,12 @@
 		if (options.classes) {
 			base.addClass(base.target, options.classes);
 		}
+	}, {
+		about: {
+			name: 'Popcorn Style Plugin',
+			version: '0.1',
+			author: 'Brian Chirls, @bchirls',
+			website: 'http://github.com/brianchirls'
+		}
 	});
 }(Popcorn));
