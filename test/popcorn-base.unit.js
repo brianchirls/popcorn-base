@@ -388,6 +388,63 @@ test('animated property with non-animated value', function() {
 	Popcorn.removePlugin('test');
 });
 
+asyncTest('animated property with multiple keyframes', function() {
+
+	var popcorn, exp = 2, eventId;
+
+
+	Popcorn.basePlugin('test', function(options, base) {
+		var times = [
+			0.5, 0.75, 1
+		];
+		base.animate('prop');
+		return {
+			start: function(event, options) {
+				equal(this.options.prop, 0, 'Animated property has correct value at start');
+			},
+			frame: function(event, options, t) {
+				var expected;
+				if (t < 0.5) {
+					expected = 2 * t * 10;
+				} else {
+					expected = 10 - (t - 0.5) * 2;
+				}
+				equal(this.options.prop, expected, 'Animated property has correct value at frame ' + t);
+				exp++;
+				expect(exp); //can't predict how many times frame will run
+
+				if (times.length && t < times[0]) {
+					popcorn.currentTime(times.shift());
+				}
+			},
+			end: function(event, options) {
+				equal(this.options.prop, 9, 'Animated property has correct value at end');
+				start();
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.25);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: {
+			0: 0,
+			0.5: 10,
+			1: 9
+		}
+	});
+
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
 test('animate color', function() {
 
 	var popcorn, exp = 8, eventId;
