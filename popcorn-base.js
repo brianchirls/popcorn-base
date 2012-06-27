@@ -935,6 +935,22 @@
 				return x;
 			}
 
+			if (isNaN(p1)) {
+				p1 = 0.25;
+			}
+
+			if (isNaN(p2)) {
+				p2 = 0.1;
+			}
+
+			if (isNaN(p3)) {
+				p3 = 0.25;
+			}
+
+			if (isNaN(p4)) {
+				p4 = 1;
+			}
+
 			/*
 			if (p2 < 0 || p2 || 1 || p4 < 0 || p4 > 1) {
 				return timing.linear();
@@ -971,6 +987,10 @@
 				return Math.pow(t, power);
 			}
 
+			if (isNaN(power) || power < 0) {
+				return timing.linear(); //same as power = 1
+			}
+
 			return f;
 		},
 		'ease-in-out-power': function(power) {
@@ -982,11 +1002,19 @@
 				return -0.5 * (Math.pow(Math.abs(t * 2 - 2), power) - 2);
 			}
 
+			if (isNaN(power) || power < 0) {
+				return timing.linear(); //same as power = 1
+			}
+
 			return f;
 		},
 		'ease-out-power': function(power) {
 			function f(t) {
 				return 1 - Math.pow(Math.abs(t - 1), power);
+			}
+
+			if (isNaN(power) || power < 0) {
+				return timing.linear(); //same as power = 1
 			}
 
 			return f;
