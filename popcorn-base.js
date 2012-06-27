@@ -1027,7 +1027,6 @@
 		'ease-out-quint': function() {
 			return timing['ease-out-power'](5);
 		},
-
 		'ease-in-sine': function() {
 			function f(t) {
 				return -Math.cos(t * Math.PI / 2) + 1;
@@ -1079,8 +1078,34 @@
 
 			return f;
 		},
+		'ease-in-circ': function() {
+			function f(t) {
+				return 1 - Math.sqrt(1 - (t * t));
+			}
+
+			return f;
+		},
+		'ease-in-out-circ': function() {
+			function f(t) {
+				return Math.sqrt(1 - Math.pow(t - 1, 2));
+			}
+
+			return f;
+		},
+		'ease-out-circ': function() {
+			function f(t) {
+				if(t < 2) {
+					return -0.5 * (Math.sqrt(1 - Math.pow(t * 2, 2)) - 1);
+				}
+
+				return 0.5 * (Math.sqrt(1 - Math.pow(t * 2 - 2, 2)) + 1);
+			}
+
+			return f;
+		},
+
 		/*
-		todo: circular, elastic, back, swing
+		todo: elastic, back, swing
 		*/
 		'bounce': function(gravity, bounce) {
 			//http://www.sosmath.com/calculus/geoser/bounce/bounce.html
@@ -1137,6 +1162,7 @@
 	/*
 	ease-in-sine, ease-out-sine, ease-in-out-sine,
 	ease-in-exp, ease-out-exp, ease-in-out-exp,
+	ease-in-circ, ease-out-circ, ease-in-out-circ
 	*/
 
 	Popcorn.basePlugin.timing = timing;
