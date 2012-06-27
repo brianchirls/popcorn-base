@@ -168,8 +168,12 @@
 					for (j = 0; j < from.length; j++) {
 						current.push(from[j] + (to[j] - from[j]) * f);
 					}
-					val = join(current, prop.str);
-					val = val.replace(rgbaRegex, rgbaRound);
+					if (prop.str) {
+						val = join(current, prop.str);
+						val = val.replace(rgbaRegex, rgbaRound);
+					} else {
+						val = current[0];
+					}
 				}
 
 				me.options[i] = val;
@@ -354,7 +358,7 @@
 
 				var prop,
 					opt,
-					i, j, val, vals, str, count,
+					i, j, val, vals, str, count = 1,
 					timingFn,
 					keyframe,
 					keyframes = [];
@@ -399,10 +403,14 @@
 					}
 
 					//convert hex colors to rgb/rgba
-					val = fixColors(val);
-					vals = typeof val === 'string' && val.match(numRegex);
+					if (typeof val === 'string') {
+						val = fixColors(val);
+						vals = val.match(numRegex);
+					} else if (typeof val === 'number') {
+						vals = [val];
+					}
 					if (vals && !isNaN(i)) {
-						if (!str) {
+						if (!str && typeof val === 'string') {
 							str = val.split(numRegex);
 							count = vals.length;
 							if (str.length < count) {
