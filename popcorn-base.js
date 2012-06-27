@@ -576,8 +576,7 @@
 
 				current = true;
 				started = true;
-
-				updateAnimations.call(me, 0); //todo: only if !frameAnimation?
+				updateAnimations.call(me, 0);
 				startFn.call(me, event, options);
 				if (typeof me.onStart === 'function') {
 					try {
@@ -598,7 +597,7 @@
 
 				current = true;
 				started = true;
-				updateAnimations.call(me, 0); //todo: only if !frameAnimation?
+				updateAnimations.call(me, 0);
 				if (typeof me.onStart === 'function') {
 					try {
 						me.onStart(options);
