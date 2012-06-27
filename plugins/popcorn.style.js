@@ -9,13 +9,16 @@
 			base.target = this.media;
 		}
 
-		base.target.style.cssText = options.style || '';
-
 		base.animate(base.target);
 
 		if (options.classes) {
 			base.addClass(base.target, options.classes);
 		}
+
+		/*
+		We don't even need to specify start/frame/end/_teardown methods here,
+		since base.animate takes care of all that for us.
+		*/
 	}, {
 		about: {
 			name: 'Popcorn Style Plugin',
