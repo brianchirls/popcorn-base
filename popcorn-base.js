@@ -326,7 +326,7 @@
 					var parsed, args = [], i, x;
 
 					if (!fn) {
-						return timing.linear;
+						return timing.linear();
 					}
 
 					if (typeof fn === 'function') {
@@ -335,11 +335,11 @@
 
 					parsed = timingRegex.exec(fn);
 					if (!parsed) {
-						return timing.linear;
+						return timing.linear();
 					}
 					fn = timing[parsed[1]];
 					if (!fn) {
-						return timing.linear;
+						return timing.linear();
 					}
 
 					if (parsed[3]) {
@@ -875,23 +875,32 @@
 
 	timing = {
 		'step-start': function(t, n) {
-			if (n < 1) {
-				return timing.linear;
-			}
-			return function(t) {
+			function f(t) {
 				return Math.floor(t * n) / n;
-			};
+			}
+
+			if (n < 1) {
+				return timing.linear();
+			}
+
+			return f;
 		},
 		'step-end': function(t, n) {
-			if (n < 1) {
-				return timing.linear;
-			}
-			return function(t) {
+			function f(t) {
 				return Math.ceil(t * n) / n;
-			};
+			}
+
+			if (n < 1) {
+				return timing.linear();
+			}
+			return f;
 		},
-		'linear': function(t) {
-			return t;
+		'linear': function() {
+			function f(t) {
+				return t;
+			}
+
+			return f;
 		},
 		'cubic-bezier': function(p1, p2, p3, p4) {
 			//http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Cubic_B.C3.A9zier_curves
@@ -927,7 +936,7 @@
 
 			/*
 			if (p2 < 0 || p2 || 1 || p4 < 0 || p4 > 1) {
-				return timing.linear;
+				return timing.linear();
 			}
 			*/
 			p2 = Math.min(Math.max(p2, 0), 1);
@@ -956,32 +965,81 @@
 		'ease-out': function(t) {
 			return timing['cubic-bezier'](0.0, 0.0, 0.58, 1.0);
 		},
-		'ease-in-sine': function(t) {
-			return -Math.cos(t * Math.PI / 2) + 1;
-		},
-		'ease-in-out-sine': function(t) {
-			return -0.5 * (Math.cos(Math.PI * t) - 1);
-		},
-		'ease-out-sine': function(t) {
-			return Math.sin(t * Math.PI / 2) ;
-		},
-		'ease-in-exp': function(t) {
-			return !t ? 0 : Math.pow(2, 10 * (t - 1));
-		},
-		'ease-in-out-exp': function(t) {
-			if (!t) {
-				return 0;
+		'ease-in-power': function(power) {
+			function f(t) {
+				return Math.pow(t, power);
 			}
-			if (t === 1) {
-				return 1;
-			}
-			if (t < 0.5) {
-				return 0.5 * Math.pow(2, 10 * (t * 2 - 1));
-			}
-			return 0.5 * (-Math.pow(2, -10 * (t * 2 - 1)) + 2);
+
+			return f;
 		},
-		'ease-out-exp': function(t) {
-			return t === 1 ? 1 : -Math.pow(2, -10 * t) + 1;
+		'ease-in-out-power': function(power) {
+			function f(t) {
+				if (t < 0.5) {
+					return 0.5 * Math.pow(t * 2, 2);
+				}
+
+				return -0.5 * (Math.pow(t * 2 - 2, power) - 2);
+			}
+
+			return f;
+		},
+		'ease-out-power': function(power) {
+			function f(t) {
+				return 1 - Math.pow(t - 1, power);
+			}
+
+			return f;
+		},
+		'ease-in-sine': function() {
+			function f(t) {
+				return -Math.cos(t * Math.PI / 2) + 1;
+			}
+
+			return f;
+		},
+		'ease-in-out-sine': function() {
+			function f(t) {
+				return -0.5 * (Math.cos(Math.PI * t) - 1);
+			}
+
+			return f;
+		},
+		'ease-out-sine': function() {
+			function f(t) {
+				return Math.sin(t * Math.PI / 2) ;
+			}
+
+			return f;
+		},
+		'ease-in-exp': function() {
+			function f(t) {
+				return !t ? 0 : Math.pow(2, 10 * (t - 1));
+			}
+
+			return f;
+		},
+		'ease-in-out-exp': function() {
+			function f(t) {
+				if (!t) {
+					return 0;
+				}
+				if (t === 1) {
+					return 1;
+				}
+				if (t < 0.5) {
+					return 0.5 * Math.pow(2, 10 * (t * 2 - 1));
+				}
+				return 0.5 * (-Math.pow(2, -10 * (t * 2 - 1)) + 2);
+			}
+
+			return f;
+		},
+		'ease-out-exp': function() {
+			function f(t) {
+				return t === 1 ? 1 : -Math.pow(2, -10 * t) + 1;
+			}
+
+			return f;
 		},
 		/*
 		todo: circular, elastic, back, swing
