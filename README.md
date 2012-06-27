@@ -353,18 +353,18 @@ All functions are accessible in the `Popcorn.basePlugin.timing` object. These ma
 	cubicBezier(1); // 1
 	cubicBezier(0.25); // 0.44075538703700035
 
-##### `linear`
+##### linear
 
 The default timing function, linear progresses the animation from start to finish at constant speed.
 
-##### `cubic-bezier(x1, y1, x2, y2)`
+##### cubic-bezier(x1, y1, x2, y2)
 
 A [cubic Bézier curve](http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Cubic_B.C3.A9zier_curves) which replicates the [cubic-bezier](https://developer.mozilla.org/en/CSS/timing-function#The_cubic-bezier%28%29_class_of_timing-functions) timing in CSS Animation. This is extremely flexible but can be difficult to use by hand.
 
 ###### Parameters
 x1, y1, x2, y2 are numbers representing the coordinates of P1 and P2 of the curve. x1 and x2 must be between 0 and 1 (inclusive). Defaults are: 0.25, 0.1, 0.25, 1.0; the same as `ease`.
 
-##### `step-start(n)` (or `step(n)`)
+##### step-start(n) (or step(n))
 
 Timing proceeds in `n` equidistant steps, as in a staricase function. At each step, the animation jumps to the end state and stays in that position until the next step or keyframe.
 
@@ -374,7 +374,7 @@ Replicates [CSS step-start](https://developer.mozilla.org/en/CSS/timing-function
 
 `n` - the number of steps, must be greater than zero.
 
-##### `step-end(n)`
+##### step-end(n)
 
 Timing proceeds in `n` equidistant steps, as in a staricase function. At each step, the animation stays at the initial state and jumps to the final position at the end of the step.
 
@@ -384,47 +384,47 @@ Replicates [CSS step-end](https://developer.mozilla.org/en/CSS/timing-function#s
 
 `n` - the number of steps, must be greater than zero.
 
-##### `ease-in`
+##### ease-in
 
 Begins slowly, accelerates and stops abruptly. Identical to `cubic-bezier(0.42, 0.0, 1.0, 1.0)`.
 
 Replicates [CSS ease-in](https://developer.mozilla.org/en/CSS/timing-function#ease-in).
 
-##### `ease-in-out`
+##### ease-in-out
 
 Begins slowly, accelerates and slows down. Identical to `cubic-bezier(0.42, 0.0, 0.58, 1.0)`.
 
 Replicates [CSS ease-in-out](https://developer.mozilla.org/en/CSS/timing-function#ease-in-out).
 
-##### `ease-out`
+##### ease-out
 
 Starts quickly and slows down. Identical to `cubic-bezier(0.0, 0.0, 0.58, 1.0)`.
 
 Replicates [CSS ease-out](https://developer.mozilla.org/en/CSS/timing-function#ease-out).
 
-##### `ease`
+##### ease
 
 Similar to `ease-in-out`, but accelerates faster at the beinning and slows down more gradually. Identical to `cubic-bezier(0.25, 0.1, 0.25, 1.0)`.
 
 Replicates [CSS ease](https://developer.mozilla.org/en/CSS/timing-function#ease).
 
-##### `ease-in-quad`, `ease-in-out-quad`, `ease-out-quad`
+##### ease-in-quad, ease-in-out-quad, ease-out-quad
 
 Similar to standard CSS easing functions, but eases on a square (a.k.a. "quadratic") curve, like a parabola.
 
-##### `ease-in-cubic`, `ease-in-out-cubic`, `ease-out-cubic`
+##### ease-in-cubic, ease-in-out-cubic, ease-out-cubic
 
 Like quad functions, but progresses on a [cubic function](http://en.wikipedia.org/wiki/Cubic_function) (i.e. "t^3") rather than square function. Acceleration and deceleration are steeper than quad.
 
-##### `ease-in-quart`, `ease-in-out-quart`, `ease-out-quart`
+##### ease-in-quart, ease-in-out-quart, ease-out-quart
 
 Like quad and cubic, but uses a [quartic function](http://en.wikipedia.org/wiki/Quartic_function) (i.e. "t^4"). Steeper than cubic.
 
-##### `ease-in-quint`, `ease-in-out-quint`, `ease-out-quint`
+##### ease-in-quint, ease-in-out-quint, ease-out-quint
 
 Ease on a [quintic function](http://en.wikipedia.org/wiki/Quinttic_function) (i.e. "t^5"). Steeper than quartic.
 
-##### `ease-in-quint(power)`, `ease-in-out-quint(power)`, `ease-out-quint(power)`
+##### ease-in-quint(power), ease-in-out-quint(power), ease-out-quint(power)
 
 Like quad, cubic, quart and quint functions, but will operate on any arbitrary power for finer control.
 
@@ -439,19 +439,19 @@ Like quad, cubic, quart and quint functions, but will operate on any arbitrary p
 - `ease-in-power(8)` is very steep acceleration and deceleration
 - `ease-in-power(2.5)` steeper than quadratic, but not as steep as cubic
 
-##### `ease-in-sine`, `ease-in-out-sine`, `ease-out-sine`
+##### ease-in-sine, ease-in-out-sine, ease-out-sine
 
 Ease along the first part of a sine curve. More subtle than quadratic.
 
-##### `ease-in-exp`, `ease-in-out-exp`, `ease-out-exp`
+##### ease-in-exp, ease-in-out-exp, ease-out-exp
 
 Ease along an exponential curve 2^(10*(t-1)). Very gradual at the ends and quick in the middle.
 
-##### `ease-in-circ`, `ease-in-out-circ`, `ease-out-circ`
+##### ease-in-circ, ease-in-out-circ, ease-out-circ
 
 Circular easing along an arc, as on the curve of a quarter-circle.
 
-##### `bounce(gravity, bounce)`
+##### bounce(gravity, bounce)
 
 Animation accelerates towards and end bounces against it multiple times like a ball falling to the ground. Each successive bounce is diminished until it settles at the end point.
 
