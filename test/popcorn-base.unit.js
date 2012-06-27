@@ -388,6 +388,68 @@ test('animated property with non-animated value', function() {
 	Popcorn.removePlugin('test');
 });
 
+test('animate color', function() {
+
+	var popcorn, exp = 8, eventId;
+	//note: all rgb/rgba values will have collapsed spaces due to rounding
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.animate('rgb');
+		base.animate('rgba');
+		base.animate('hex');
+		base.animate('hexAlpha');
+		return {
+			start: function(event, options) {
+				equal(this.options.rgb, 'rgb(200,128,0)', 'Animated rgb color has correct value at start');
+				equal(this.options.rgba, 'rgba(200,128,0,1)', 'Animated rgba color has correct value at start');
+				equal(this.options.hex, 'rgb(200,128,0)', 'Animated hex color has correct value at start');
+				equal(this.options.hexAlpha, 'rgba(200,128,0,1)', 'Animated hex color with alpha has correct value at start');
+			},
+			frame: function(event, options, t) {
+				exp+=4;
+				expect(exp); //can't predict how many times frame will run
+				equal(this.options.rgb, 'rgb(100,128,100)', 'Animated rgb color has correct value at frame');
+				equal(this.options.rgba, 'rgba(100,128,100,0.5)', 'Animated rgb color has correct value at frame');
+				equal(this.options.hex, 'rgb(100,128,100)', 'Animated hex color has correct value at frame');
+				equal(this.options.hexAlpha, 'rgba(100,128,100,0.5)', 'Animated hex color with alpha has correct value at frame');
+			},
+			end: function(event, options) {
+				equal(this.options.rgb, 'rgb(0,128,200)', 'Animated rgb color has correct value at end');
+				equal(this.options.rgba, 'rgba(0,128,200,0)', 'Animated rgb color has correct value at end');
+				equal(this.options.hex, 'rgb(0,128,200)', 'Animated hex color has correct value at end');
+				equal(this.options.hexAlpha, 'rgba(0,128,200,0)', 'Animated hex color with alpha has correct value at end');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.5);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		rgb: {
+			from: 'rgb(200,128,0)', to: 'rgb(0,128,200)'
+		},
+		rgba: {
+			from: 'rgba(200,128,0,1)', to: 'rgba(0,128,200,0)'
+		},
+		hex: {
+			from: '#C88000', to: '#0080C8'
+		},
+		hexAlpha: {
+			from: '#C88000FF', to: '#0080C800'
+		}
+	});
+
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
 test('animate with callback', function() {
 
 	var popcorn, exp = 2, eventId;
