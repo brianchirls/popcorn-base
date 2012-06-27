@@ -310,10 +310,10 @@ test('makeContainer', function() {
 module('Animation');
 test('animate', function() {
 
-	var popcorn, exp = 3;
+	var popcorn, eventId, exp = 3;
 
 	Popcorn.basePlugin('test', function(options, base) {
-		var eventId, ret = base.animate('prop');
+		var ret = base.animate('prop');
 		ok(ret, 'base.animate returns true when successful');
 		return {
 			start: function(event, options) {
@@ -338,7 +338,7 @@ test('animate', function() {
 		start: 0,
 		end: 1,
 		prop: {
-			from: '1px', to: '2%'
+			from: '1px', to: '2px'
 		}
 	});
 
