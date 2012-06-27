@@ -874,7 +874,7 @@
 	};
 
 	timing = {
-		'step-start': function(t, n) {
+		'step-start': function(n) {
 			function f(t) {
 				return Math.floor(t * n) / n;
 			}
@@ -885,7 +885,7 @@
 
 			return f;
 		},
-		'step-end': function(t, n) {
+		'step-end': function(n) {
 			function f(t) {
 				return Math.ceil(t * n) / n;
 			}
@@ -893,6 +893,7 @@
 			if (n < 1) {
 				return timing.linear();
 			}
+
 			return f;
 		},
 		'linear': function() {
@@ -953,16 +954,16 @@
 				return bezierY(findX(t));
 			};
 		},
-		'ease': function(t) {
+		'ease': function() {
 			return timing['cubic-bezier'](0.25, 0.1, 0.25, 1.0);
 		},
-		'ease-in': function(t) {
+		'ease-in': function() {
 			return timing['cubic-bezier'](0.42, 0.0, 1.0, 1.0);
 		},
-		'ease-in-out': function(t) {
+		'ease-in-out': function() {
 			return timing['cubic-bezier'](0.42, 0.0, 0.58, 1.0);
 		},
-		'ease-out': function(t) {
+		'ease-out': function() {
 			return timing['cubic-bezier'](0.0, 0.0, 0.58, 1.0);
 		},
 		'ease-in-power': function(power) {
@@ -990,6 +991,43 @@
 
 			return f;
 		},
+		'ease-in-quad': function() {
+			return timing['ease-in-power'](2);
+		},
+		'ease-in-out-quad': function() {
+			return timing['ease-in-out-power'](2);
+		},
+		'ease-out-quad': function() {
+			return timing['ease-out-power'](2);
+		},
+		'ease-in-cubic': function() {
+			return timing['ease-in-power'](3);
+		},
+		'ease-in-out-cubic': function() {
+			return timing['ease-in-out-power'](3);
+		},
+		'ease-out-cubic': function() {
+			return timing['ease-out-power'](3);
+		},
+		'ease-in-quart': function() {
+			return timing['ease-in-power'](4);
+		},
+		'ease-in-out-quart': function() {
+			return timing['ease-in-out-power'](4);
+		},
+		'ease-out-quart': function() {
+			return timing['ease-out-power'](4);
+		},
+		'ease-in-quint': function() {
+			return timing['ease-in-power'](5);
+		},
+		'ease-in-out-quint': function() {
+			return timing['ease-in-out-power'](5);
+		},
+		'ease-out-quint': function() {
+			return timing['ease-out-power'](5);
+		},
+
 		'ease-in-sine': function() {
 			function f(t) {
 				return -Math.cos(t * Math.PI / 2) + 1;
