@@ -156,6 +156,9 @@
 				from = findPreviousKeyframe(prop.keyframes, fraction);
 				to = prop.keyframes[from + 1];
 				from = prop.keyframes[from];
+				if (!from) {
+					from = to;
+				}
 
 				if (!to) {
 					val = join(from.val, prop.str);
