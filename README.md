@@ -267,7 +267,7 @@ Unlike `classList.add`, `classes` can be an array or a string delimited
 by spaces, returns, newlines or commas. Duplicates will be removed.
 
 Though most desktop browsers that support HTML5 video also support
-`classList` natively, it is still (missing)[http://caniuse.com/#search=classlist] from Internet Explorer
+`classList` natively, it is still [missing](http://caniuse.com/#search=classlist) from Internet Explorer
 and iOS before v5.0, so a polyfill is provided.
 
 ##### removeClass (element, classes) [static]
