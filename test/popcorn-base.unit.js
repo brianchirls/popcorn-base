@@ -552,7 +552,7 @@ test('animate with callback', function() {
 	Popcorn.removePlugin('test');
 });
 
-test('timgin functions', function() {
+test('timing functions', function() {
 
 	var timingSamples, samples, times, inc, i, timing,
 		target, actual;
