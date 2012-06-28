@@ -161,7 +161,7 @@
 				}
 
 				if (!to) {
-					val = join(from.val, prop.str);
+					val = prop.str ? join(from.val, prop.str) : from.val[0];
 				} else {
 					delta = to.t - from.t;
 					timingFn = from.timing || prop.timing;
