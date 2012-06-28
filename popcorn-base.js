@@ -18,6 +18,8 @@
 		timing,
 		numRegex = /[\-+]?[0-9]*\.?[0-9]+/g,
 		styleHyphenRegex = /\-([a-z])/g,
+		stylePrefixRegex = /^\-((moz|webkit|o|ms)-)?([a-z\-]+)/,
+		browserPrefixes = ['', '-moz-', '-webkit-', '-o-', '-ms-'],
 		colorRegex = /#(([0-9a-fA-F]{3,8}))/g,
 		rgbaRegex = /(rgba?)\(\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*(,([0-9]*\.?[0-9]+))?\)/gi,
 		timingRegex = /^([A-Za-z\-]+)(\((([\-+]?[0-9]*\.?[0-9]+)(,\s*([\-+]?[0-9]*\.?[0-9]+))*)\))?$/;
@@ -285,6 +287,8 @@
 		if `callback` option is provided, will call that on every frame
 		*/
 		this.animate = function(name, opts) {
+			var callback, animated = false, i, styles = {};
+
 			function animateOption(name, callback) {
 				function fixColors(str) {
 					var matches, colors = {}, i, match;
@@ -478,8 +482,27 @@
 					}
 				}
 
-				var callback, animated = false, backup, jsName;
-				jsName = isStyle(element, name);
+				var callback, animated = false, backup, jsName, prefixed, prefixedName, i;
+				prefixed = stylePrefixRegex.exec(name);
+
+				if (prefixed) {
+					prefixed = prefixed[3];
+					for (i = 0; i < browserPrefixes.length && !jsName; i++) {
+						prefixedName = browserPrefixes[i] + prefixed;
+						jsName = isStyle(element, prefixedName);
+
+						//don't set if this is specified elsewhere in options
+						//todo: don't set if it's already been set automagically
+						if (styles[jsName] || jsName && prefixedName !== name &&
+							options[browserPrefixes[i] + prefixed]) {
+
+							return false;
+						}
+					}
+				} else {
+					jsName = isStyle(element, name);
+				}
+
 				if (!jsName) {
 					return false;
 				}
@@ -491,13 +514,15 @@
 				callback = function(val) {
 					element.style[jsName] = val;
 				};
-				animated = animateOption(name, callback);
+
+				styles[jsName] = true;
 
 				backup = {
 					e: element,
-					name: name
+					name: jsName
 				};
 
+				animated = animateOption(name, callback);
 				if (!animated) {
 					backup.val = options[name];
 				}
@@ -505,8 +530,6 @@
 
 				return animated;
 			}
-
-			var callback, animated = false, i;
 
 			if (name instanceof window.HTMLElement) {
 				for (i in options) {
