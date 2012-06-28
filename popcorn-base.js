@@ -795,7 +795,7 @@
 				return;
 			}
 
-			classes = this.toArray(classes, /[\s\t\r\n ]+/);
+			classes = PopcornBaseEvent.prototype.toArray(classes, /[\s\t\r\n ]+/);
 			curClasses = element.getAttribute('class') || '';
 			curClasses = curClasses.split(/[\s\t\r\n ]+/);
 			
@@ -815,7 +815,7 @@
 				return;
 			}
 
-			classes = this.toArray(classes, /[\s\t\r\n ]+/);
+			classes = PopcornBaseEvent.prototype.toArray(classes, /[\s\t\r\n ]+/);
 			curClasses = element.getAttribute('class') || '';
 			curClasses = curClasses.split(/[\s\t\r\n ]+/);
 
@@ -836,7 +836,7 @@
 				return;
 			}
 
-			c = this.toArray(classes, /[\s\t\r\n ]+/);
+			c = PopcornBaseEvent.prototype.toArray(classes, /[\s\t\r\n ]+/);
 
 			for (i = 0; i < c.length; i++) {
 				try {
@@ -852,7 +852,7 @@
 				return;
 			}
 
-			c = this.toArray(classes, /[\s\t\r\n ]+/);
+			c = PopcornBaseEvent.prototype.toArray(classes, /[\s\t\r\n ]+/);
 
 			for (i = 0; i < c.length; i++) {
 				try {
@@ -872,6 +872,12 @@
 		var bp = new PopcornBasePlugin(name, plugin, manifest);
 		//return bp;
 	};
+
+	//export utility functions
+	Popcorn.basePlugin.toArray = PopcornBaseEvent.prototype.toArray;
+	Popcorn.basePlugin.toObject = PopcornBaseEvent.prototype.toObject;
+	Popcorn.basePlugin.addClass = PopcornBaseEvent.prototype.addClass;
+	Popcorn.basePlugin.removeClass = PopcornBaseEvent.prototype.removeClass;
 
 	timing = {
 		'step-start': function(n) {
