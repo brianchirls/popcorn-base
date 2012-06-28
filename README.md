@@ -244,7 +244,6 @@ Each key frame can be given its own timing function:
 		}
 	})
 
-
 To animate a parameter, call `base.animate` in the plugin definition with the first parameter
 as the name of the option. All options will be provided in `base.options` with the correct values
 at any given time.
@@ -303,6 +302,21 @@ If no property name is supplied, and the only parameter is a DOM Element, *all* 
 		base.makeContainer();
 		base.animate(this.container); //Animate all styles!
 	});
+
+When setting style properties that require experimental vendor prefixes, it is possible to substitute `-*-` for the vendor prefix. Popcorn Base will first try to set the non-prefixed style and then try each of the major browser vendor prefixes. If the same property is set with a full browser prefix, it will not be over-written.
+
+	popcorn.style({
+		start: 0,
+		end: 2,
+		'-*-transform': { //spin clockwise
+			from: 'rotate(0deg)',
+			to: 'rotate(360deg)'
+		},
+		'-moz-transform': { //...unless it's firefox; rotate counter-clockwise
+			from: 'rotate(360deg)',
+			to: 'rotate(0deg)'
+		}
+	})
 
 ##### toArray (data, delimiters) [static]
 

@@ -497,7 +497,7 @@
 						//don't set if this is specified elsewhere in options
 						//todo: don't set if it's already been set automagically
 						if (styles[jsName] || jsName && prefixedName !== name &&
-							options[browserPrefixes[i] + prefixed]) {
+							options[prefixedName]) {
 
 							return false;
 						}
