@@ -18,7 +18,7 @@
 		timing,
 		numRegex = /[\-+]?[0-9]*\.?[0-9]+/g,
 		styleHyphenRegex = /\-([a-z])/g,
-		stylePrefixRegex = /^\-((moz|webkit|o|ms)-)?([a-z\-]+)/,
+		stylePrefixRegex = /^\-\*\-([a-z\-]+)/,
 		browserPrefixes = ['', '-moz-', '-webkit-', '-o-', '-ms-'],
 		colorRegex = /#(([0-9a-fA-F]{3,8}))/g,
 		rgbaRegex = /(rgba?)\(\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*(,([0-9]*\.?[0-9]+))?\)/gi,
@@ -489,7 +489,7 @@
 				prefixed = stylePrefixRegex.exec(name);
 
 				if (prefixed) {
-					prefixed = prefixed[3];
+					prefixed = prefixed[1];
 					for (i = 0; i < browserPrefixes.length && !jsName; i++) {
 						prefixedName = browserPrefixes[i] + prefixed;
 						jsName = isStyle(element, prefixedName);
