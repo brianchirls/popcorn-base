@@ -501,7 +501,7 @@
 				});				
 			})
 
-			popcorn.on('loadedmetadata', function () {
+			function popcornEvents () {
 				popcorn.style({
 					start: 0,
 					end: 1,
@@ -1192,7 +1192,13 @@
 						timing: 'ease-out-power(9)'
 					}
 				});
-			});
+			};
+
+			if (popcorn.duration()) {
+				popcornEvents();
+			} else {
+				popcorn.on('loadedmetadata', popcornEvents);
+			}
 		}());
 		</script>
 	</body>
