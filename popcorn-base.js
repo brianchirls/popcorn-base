@@ -554,6 +554,12 @@
 				return animated;
 			}
 
+			if (!name) {
+				if (this.container) {
+					name = this.container;
+				}
+			}
+
 			if (name instanceof window.HTMLElement) {
 				for (i in options) {
 					animated = animateStyle(i, name) || animated;
