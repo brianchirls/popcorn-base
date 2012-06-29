@@ -289,7 +289,7 @@
 					if (allEvents[i] === this) {
 						i++;
 					}
-					if (i < allEvents.length) {
+					if (i < allEvents.length && allEvents[i].container.parentNode === this.target) {
 						nextElement = allEvents[i].container || null;
 					}
 				}
