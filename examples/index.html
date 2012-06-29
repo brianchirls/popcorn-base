@@ -448,50 +448,6 @@
 				return true;
 			});
 
-			Popcorn.basePlugin('github', function (options, base) {
-				var xhr, c;
-
-				xhr = new XMLHttpRequest();
-				if (xhr.withCredentials !== undefined) {
-					xhr.open('GET', options.url, true);
-					xhr.setRequestHeader('Accept', 'application/vnd.github.beta.html+json');
-					xhr.onreadystatechange = function(evt) {
-						if (xhr.readyState === 4) {
-							c.innerHTML = xhr.responseText;
-						}
-					};
-					xhr.send();
-				} else if (window.XDomainRequest) {
-					xhr = new window.XDomainRequest();
-					xhr.onload = function(evt) {
-						c.innerHTML = xhr.responseText;
-					};
-					xhr.open('get', url);
-					xhr.send();
-				} else {
-					return;
-				}
-
-				c = base.makeContainer();
-				c.style.display = 'none';
-				base.animate(c);
-				base.animate('scroll', function(val) {
-					var scrollHeight = c.scrollHeight - c.offsetHeight;
-					if (base.popcorn.paused()) {
-						return;
-					}
-					c.scrollTop = val * scrollHeight;
-				});
-				return {
-					start: function (event, options) {
-						c.style.display = '';
-					},
-					end: function (event, options) {
-						c.style.display = 'none';
-					}
-				}
-			});
-
 			Popcorn.forEach(Popcorn.registryByName, function (plugin, name) {
 				if (name === 'style') {
 					return;
@@ -994,11 +950,11 @@
 					top: '5%'
 				});
 
-				popcorn.github({
+				popcorn.iframe({
 					start: 61,
 					end: 66,
 					target: 'video-container',
-					url: 'https://api.github.com/repos/brianchirls/popcorn-base/readme',
+					html: '<body style="margin: 0"><iframe width="100%" height="8900" seamless src="http://brianchirls.github.com/popcorn-base/README.html" style="border: none;"></iframe></body>',
 					width: '800px',
 					height: '400px',
 					'-*-transform': 'scale(0.8)',
