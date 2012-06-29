@@ -160,7 +160,7 @@
 					from = to;
 				}
 
-				if (!to) {
+				if (!to || from === to) {
 					val = prop.str ? join(from.val, prop.str) : from.val[0];
 				} else {
 					delta = to.t - from.t;
@@ -484,6 +484,11 @@
 						return letter.toUpperCase();
 					}
 					var style;
+
+					if (name === 'src') {
+						//weirdness in chrome
+						return false;
+					}
 
 					//webkit
 					if (element.style.hasOwnProperty(name)) {
