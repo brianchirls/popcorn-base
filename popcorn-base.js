@@ -609,7 +609,7 @@
 		if (typeof startFn === 'function') {
 			definition.start = function(event, options) {
 				var i, s;
-				for (i in setStyles) {
+				for (i = 0; i < setStyles.length; i++) {
 					s = setStyles[i];
 					s.backup = s.e.style[s.name];
 					s.e.style[s.name] = s.val;
@@ -630,7 +630,7 @@
 		} else {
 			definition.start = function(event, options) {
 				var i, s;
-				for (i in setStyles) {
+				for (i = 0; i < setStyles.length; i++) {
 					s = setStyles[i];
 					s.backup = s.e.style[s.name];
 					s.e.style[s.name] = s.val;
@@ -687,7 +687,7 @@
 
 					updateAnimations.call(me, 1);
 
-					for (i in setStyles) {
+					for (i = 0; i < setStyles.length; i++) {
 						s = setStyles[i];
 						s.e.style[s.name] = s.backup;
 					}
@@ -711,7 +711,7 @@
 
 					updateAnimations.call(me, 1);
 
-					for (i in setStyles) {
+					for (i = 0; i < setStyles.length; i++) {
 						s = setStyles[i];
 						s.e.style[s.name] = s.backup;
 					}
