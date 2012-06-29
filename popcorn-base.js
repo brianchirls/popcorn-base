@@ -192,6 +192,21 @@
 		this.popcorn = popcorn;
 		this.pluginName = basePlugin.name;
 
+		//clean up start/end values and make them numbers
+		if (typeof options.start === 'string') {
+			options.start = Popcorn.util.toSeconds(options.start, popcorn.options.framerate);
+		}
+		if (!options.start && options.start !== 0) {
+			options.start = options['in'] || 0;
+		}
+
+		if (typeof options.end === 'string') {
+			options.end = Popcorn.util.toSeconds(options.end, popcorn.options.framerate);
+		}
+		if (!options.end && options.end !== 0) {
+			options.end = options['out'] || popcorn.duration() || Number.MAX_VALUE;
+		}
+
 		//keep a separate copy of options
 		this.options = {};
 		for (i in options) {
