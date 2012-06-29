@@ -1,3 +1,6 @@
+---
+title: Popcorn.js Base Plugin README
+---
 # Popcorn.js Base Plugin
 
 Popcorn.js Base Plugin is a wrapper for creating Popcorn plugins that
