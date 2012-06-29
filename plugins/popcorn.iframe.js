@@ -11,7 +11,7 @@
 
 		function loadFrame() {
 			if (options.html) {
-				iframe.contentDocument.body.innerHTML = options.html;
+				iframe.contentDocument.write(options.html);
 			} else {
 				iframe.src = options.src;
 			}
