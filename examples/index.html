@@ -1,58 +1,1197 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Popcorn Base Plugin Example</title>
-		<script type="text/javascript" src="../external/popcorn.js"></script>
-		<script type="text/javascript" src="../popcorn-base.js"></script>
-		<script type="text/javascript" src="../plugins/popcorn.words.js"></script>
+		<title>Popcorn Base Plugin</title>
 		<style>
+			body {
+				font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				overflow: hidden;
+			}
+
+			.popcorn-iframe {
+				background-color: white;
+			}
+
+			.code {
+				/*
+				font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+				*/
+
+				color: white;
+				white-space: pre-wrap;
+				word-break: break-all;
+
+				text-shadow: rgba(80, 80, 80, 0.4) 2px 2px 6px;
+				font-size: 28px;
+
+				/* padding: 20px;
+				background-color: #272822;
+				color: #F8F8F2;*/
+			}
+
+			.code .string {
+				color: #E6DB74;
+			}
+
+			.code .keyword {
+				color: #AE81FF;
+			}
+
+			.code .argument {
+				color: #FD971F;
+			}
+			
+			.popcorn-github {
+				max-height: 100%;
+				max-width: 100%;
+				overflow: auto;
+				box-sizing: border-box;
+
+				border: 1px solid #CACACA;
+				padding: 30px;
+				font-size: 14px;
+				line-height: 1.6;
+				background-color: white;
+			}
+
+			.popcorn-github h1 {
+				margin-top: 0;
+			}
+
+			.popcorn-github h2 {
+				border-bottom: 1px solid #CCC;
+			}
+
+			.popcorn-github pre {
+				background-color: #F8F8F8;
+				border: 1px solid #CCC;
+				font-size: 13px;
+				line-height: 19px;
+				overflow: auto;
+				padding: 6px 10px;
+				border-radius: 3px;
+			}
+
+			#volume-knob {
+				top: 50%;
+				left: 350px;
+				position: absolute;
+				display: none;
+			}
+
+			#timing-example {
+				display: none;
+				z-index: 120;
+				position: absolute;
+				width: 80%;
+				height: 80%;
+				top: 10%;
+				left: 10%;
+				background-color: rgba(240, 240, 240, 0.9);
+				border: #676767 solid 1px;
+			}
+
+			#timing-example h3 {
+				text-align: center;
+				font-size: 40px;
+			}
+
+			#timing-example div {
+				height: 30px;
+				width: 30px;
+				background-color: #008;
+				margin: 20px;
+			}
+
 			#video-container {
 				margin: 0 auto;
 				width: 800px;
+				height: 450px;
 				position: relative;
 				overflow: hidden;
+				border: #676767 solid 1px;
+				background-color: '#D1D1D1'
+			}
+
+			#video-container > * {
+				z-index: 300;
+			}
+
+			#video-player {
+				background-color: white;
+				margin: 20px auto;
+				width: 800px;
+				height: 32px;
+				position: relative;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+
+			#video {
+				z-index: 100;
+				position: absolute;
+			}
+
+			#text-frame {
+				display: none;
+				z-index: 120;
+				position: absolute;
+				width: 80%;
+				height: 80%;
+				top: 10%;
+				left: 10%;
+				box-shadow: rgba(0,0,0,0.6) 0px 0px 29px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 20px;
+			}
+
+			#text-container {
+				position: relative;
+				overflow: hidden;
+				padding: 10px 30px;
+				font-size: 30px;
+				color:  white;
+				text-shadow: black 1px 1px;
+			}
+
+			#text-container ul {
+				list-style: none outside none;
+			}
+
+			#text-container li {
+				display: none;
+				margin: 10px 0;
+			}
+
+			#playtext {
+				position: absolute;
+				width: 100%;
+				text-align: center;
+				top: 30%;
+				font-size: 60px;
+				color: #676767;
+				cursor: pointer;
+			}
+
+			#playtext:hover {
+				color: #222;
 			}
 
 			.popcorn-words {
 				white-space: pre;
 			}
 			
+			#playbutton {
+				display: inline-block;
+				height: 32px;
+				width: 24px;
+				background-position: top left;
+				background-repeat: no-repeat;
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAYAAABU1PscAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAN1wAADdcBQiibeAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEQSURBVFiF1ZexDYMwEEX/ISQmYIrMwwI0GLGQaRgA5skUTOAGp4mlSxAIMMbn1wEC+f1XQUqp0RjTDcMwIwBKKbv3XGtNPu9n1tqqKIp30zTVlQPGJgMAa21JRGPbtmNd12XsQ50h4xcp1sj+b6RWYyXgSKXGpgCQRo1dAYfkGocEALk1Dgs4pNU4LQDIqnFJwCGhhpcAEL+Gt4AjVo3bBIA4NW4VcDxZI4jAkwQRIKLJGPPq+34K8X1OfufHiGhelqXTWgc/uOM2ge/qwX5Nt/AWiLE6x0sg1uqcSwKxV+ecFpCwOuewgKTVOYcEpK3O2RWQujpnU0Dy6pyVQAqrc34EUlmdkwPprc7JU1yd8wELddH8DWv9lQAAAABJRU5ErkJggg==);
+				cursor: pointer;
+			}
+
+			#playbutton.playing {
+				background-position: top right;
+			}
+
+			#timeline {
+				display: inline-block;
+				position: relative;
+				width: 766px;
+				margin: 14px 0px 14px 10px;
+				height: 4px;
+				background-color: #aaa;
+				cursor: pointer;
+			}
+
+			#timecode {
+				display: none;
+			}
+
+			#progress {
+				display: inline-block;
+				height: 4px;
+				width: 0%;
+				background-color: #676767;
+				position: absolute;
+			}
+
+			.quick-links {
+				list-style: none outside none;
+				margin: 36px 0;
+				min-height: 30px;
+				padding: 5px 20px;
+				text-align: center;
+			}
+
+			.quick-links li {
+				display: inline;
+				margin: 0 5px;
+			}
+
+			.quick-links > li > iframe {
+				display: none;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="video-container">
-			<video id="video" width="800" height="450" preload controls="controls" poster="http://mozillapopcorn.org/wp-content/themes/popcorn/images/poster.png" >
+			<video id="video" width="800" height="450" preload poster="http://mozillapopcorn.org/wp-content/themes/popcorn/images/poster.png" >
 				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
 				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
 				<source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
 			</video>
+			<h2 id="playtext">play</h2>
+			<div id="text-frame"><div id="text-container">
+				<ul>
+					<li id="bullet1">Event callbacks (onStart, onEnd, etc...)</li>
+					<li id="bullet2">Discover target element</li>
+					<li id="bullet3">Create and sort container element</li>
+					<li id="bullet4">Automatic _teardown</li>
+					<li id="bullet5">Animate everything!</li>
+			</div></div>
+			<div id="timing-example">
+				<h3>Timing Functions</h3>
+				<div id="linear"></div>
+				<div id="ease"></div>
+				<div id="ease-in-quad"></div>
+				<div id="ease-out-sine"></div>
+			</div>
+			<img src="images/volume.png" id="volume-knob"/>
 		</div>
+		<div id="video-player">
+			<div id="playbutton"> </div><div id="timeline"><div id="progress"> </div></div>
+		</div>
+		<div id="timecode">0:00:00.000</div>
+
+		<ul class="quick-links">
+			<li><iframe id="github-watch" src="http://markdotto.github.com/github-buttons/github-btn.html?user=brianchirls&amp;repo=popcorn-base&amp;type=watch&amp;count=true&amp;size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="170px" height="30px"></iframe></li>
+			<li><iframe id="github-fork" src="http://markdotto.github.com/github-buttons/github-btn.html?user=brianchirls&amp;repo=popcorn-base&amp;type=fork&amp;count=true&amp;size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="146px" height="30px"></iframe></li>
+  			<li><iframe id="github-follow" src="http://markdotto.github.com/github-buttons/github-btn.html?user=brianchirls&amp;type=follow&amp;count=true&amp;size=large" allowtransparency="true" frameborder="0" scrolling="0" width="246px" height="30px"></iframe></li>
+		</ul>
+		<script type="text/javascript" src="../external/popcorn.js"></script>
+		<script type="text/javascript" src="../popcorn-base.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.loudness.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.words.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.style.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.typist.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.iframe.js"></script>
 		<script type="text/javascript">
 		(function(){
-			var popcorn = Popcorn('#video', {
+			function touch(element, down, move, up) {
+				function mouseMove(e) {
+					move(e || window.event);
+				}
+
+				function mouseUp(e) {
+					if (up) {
+						up(e || window.event);
+					}
+					document.removeEventListener('mousemove',mouseMove, false);
+					document.removeEventListener('mouseup',mouseUp, false);
+				}
+
+				function mouseDown(e) {
+					if (down) {
+						if (down(e || window.event) && e.preventDefault) {
+							e.preventDefault();
+						} else {
+							return;
+						}
+					}
+					if (move) {
+						document.addEventListener('mousemove',mouseMove, false);
+					}
+					document.addEventListener('mouseup',mouseUp, false);
+				}
+				element.addEventListener('mousedown', mouseDown, false);
+				
+				element.addEventListener('touchstart', function (e) {
+					function touchMove(e) {
+						move(e.touches[0] || window.event);
+						return false;
+					}
+					function touchEnd(e) {
+						//up(e.touches[0]);
+						if (up) {
+							up();
+						}
+						document.removeEventListener('touchmove',touchMove, false);
+						document.removeEventListener('touchend',touchEnd, false);
+					}
+
+					if (e.preventDefault) { e.preventDefault(); }
+					element.removeEventListener('mousedown',mouseDown, false);
+				
+					if (down) {
+						down(e.touches[0] || window.event);
+					}
+				
+					if (move) {
+						document.addEventListener('touchmove',touchMove, false);
+					}
+					document.addEventListener('touchend',touchEnd, false);
+				
+				});
+			}
+
+			var playbutton, timeline, progress, playtext, timecode,
+				popcorn, playing,
+				addClass = Popcorn.basePlugin.addClass,
+				removeClass = Popcorn.basePlugin.removeClass;
+
+			popcorn = Popcorn('#video', {
 				frameAnimation: true
 			});
-			popcorn.words({
-				start: 1,
-				end: 5,
-				target: 'video-container',
-				text: 'Hi there',
-				top: '10%',
-				left: '10%',
-				classes: 'one,two three'
+//popcorn.mute();
+			//very basic player
+			playtext = document.getElementById('playtext');
+			playbutton = document.getElementById('playbutton');
+			timeline = document.getElementById('timeline');
+			progress = document.getElementById('progress');
+			timecode = document.getElementById('timecode');
+
+			window.addEventListener('keyup', function(evt) {
+				if (evt.which === 32) {
+					if (popcorn.paused()) {
+						popcorn.play();
+					} else {
+						popcorn.pause();
+					}
+				}
+			}, true);
+
+			window.addEventListener('keydown', function(evt) {
+				if (popcorn.paused()) {
+					if (evt.which === 37) {
+							popcorn.currentTime(popcorn.currentTime() - 1/30);
+					} else if (evt.which === 39) {
+						popcorn.currentTime(popcorn.currentTime() + 1/30);
+					}
+				}
+			}, true);
+
+			popcorn.on('play', function() {
+				addClass(playbutton, 'playing');
+				playtext.style.display = 'none';
 			});
 
-			popcorn.words({
-				start: 2,
-				end: 8,
-				target: 'video-container',
-				text: 'Popcorn.js is animated!',
-				top: '40%',
-				left: {
-					from: '100%',
-					to: '-40%'
-				},
-				style: 'font-size: 2em'
+			popcorn.on('pause', function() {
+				removeClass(playbutton, 'playing');
+				addClass(playbutton, 'paused');
+			});
+
+			popcorn.on('seeking', function () {
+				playtext.style.display = 'none';
+			});
+
+			popcorn.on('timeupdate', function() {
+				var t,h,m,s;
+				progress.style.width = Math.floor(100 * popcorn.currentTime() / popcorn.duration()) + '%';
+
+				t = popcorn.currentTime();
+				h = Math.floor(t / 3600);
+				m = Math.floor(t / 60) % 60;
+				s = Math.round((t % 60) * 1000) / 1000;
+				if (m < 10) {
+					m = '0' + m;
+				}
+
+				t = h + ':' + m + ':';
+				if (s < 10) {
+					t += '0'
+				}
+				t += s;
+				if (s === Math.floor(s)) {
+					t += '.000';
+				} else {
+					s = (s + '').split('.')[1];
+					if (s.length === 1) {
+						t += '00';
+					} else if (s.length === 2) {
+						t += '0';
+					}
+				}
+				timecode.firstChild.nodeValue = t;
+
+			});
+
+			playbutton.addEventListener('click', function (e) {
+				if (popcorn.paused()) {
+					popcorn.play();
+				} else {
+					popcorn.pause();
+				}
+			}, false);
+
+			playtext.addEventListener('click', function () {
+				popcorn.play();
+			});
+
+			touch(timeline, function (e) {
+				var t = popcorn.duration() * (e.clientX - timeline.offsetLeft - timeline.parentNode.offsetLeft) / timeline.offsetWidth;
+				playing = !popcorn.paused();
+				popcorn.pause();
+				popcorn.currentTime(t);
+				return true;
+			}, function (e) {
+				var t = popcorn.duration() * (e.clientX - timeline.offsetLeft - timeline.parentNode.offsetLeft) / timeline.offsetWidth;
+				popcorn.currentTime(t);
+				return true;
+			}, function (e) {
+				if (playing) {
+					popcorn.play();
+				}
+				return true;
+			});
+
+			Popcorn.basePlugin('github', function (options, base) {
+				var xhr, c;
+
+				xhr = new XMLHttpRequest();
+				if (xhr.withCredentials !== undefined) {
+					xhr.open('GET', options.url, true);
+					xhr.setRequestHeader('Accept', 'application/vnd.github.beta.html+json');
+					xhr.onreadystatechange = function(evt) {
+						if (xhr.readyState === 4) {
+							c.innerHTML = xhr.responseText;
+						}
+					};
+					xhr.send();
+				} else if (window.XDomainRequest) {
+					xhr = new window.XDomainRequest();
+					xhr.onload = function(evt) {
+						c.innerHTML = xhr.responseText;
+					};
+					xhr.open('get', url);
+					xhr.send();
+				} else {
+					return;
+				}
+
+				c = base.makeContainer();
+				c.style.display = 'none';
+				base.animate(c);
+				base.animate('scroll', function(val) {
+					var scrollHeight = c.scrollHeight - c.offsetHeight;
+					if (base.popcorn.paused()) {
+						return;
+					}
+					c.scrollTop = val * scrollHeight;
+				});
+				return {
+					start: function (event, options) {
+						c.style.display = '';
+					},
+					end: function (event, options) {
+						c.style.display = 'none';
+					}
+				}
+			});
+
+			Popcorn.forEach(Popcorn.registryByName, function (plugin, name) {
+				if (name === 'style') {
+					return;
+				}
+				popcorn.defaults(name, {
+					target: 'video-container'
+				});				
+			})
+
+			popcorn.on('loadedmetadata', function () {
+				popcorn.style({
+					start: 0,
+					end: 1,
+					opacity: {
+						'from': 0,
+						to: 1,
+						timing: 'ease'
+					}
+				});
+
+				popcorn.words({
+					start: 4,
+					end: 6,
+					text: 'Introducing...',
+					'text-align': 'center',
+					'font-size': '60px',
+					left: {
+						from: '0%',
+						0.1: '30%',
+						0.9: '70%',
+						to: '100%'
+					},
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(-100%)',
+						0.1: 'translateX(-30%)',
+						0.9: 'translateX(-70%)',
+						to: 'translateX(0%)',
+						timing: 'ease-in-out-quad'
+					},
+					top: '40%'
+				});
+
+				popcorn.style({
+					start: 5.8,
+					end: 7.2,
+					'-*-transform-origin': 'bottom center',
+					'-*-transform': {
+						from: 'perspective( 600px ) rotateX( 0deg )',
+						to: 'perspective( 600px ) rotateX( 90deg )',
+						timing: 'bounce(200)'
+					}
+				});
+
+				popcorn.style({
+					start: 7.2,
+					end: 10,
+					'-*-transform-origin': '50% 50%',
+					'-*-transform': {
+						from: 'translate(-100%) scale(0.4)',
+						to: 'translate(0%) scale(1)',
+						timing: 'ease-out-exp'
+					}
+				});
+
+				popcorn.words({
+					start: 5.8,
+					end: 10,
+					text: 'Base Plugin',
+					'text-align': 'center',
+					'font-size': '80px',
+					left: '50%',
+					top: '40%',
+					'z-index': 10,
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(-50%)',
+						to: 'translateX(-50%)',
+						timing: 'ease-in-quad'
+					}
+				});
+
+				popcorn.style({
+					start: 9,
+					end: 24,
+					target: 'text-frame',
+					display: 'block',
+					'-*-transform': {
+						from: 'perspective( 600px ) translateX(200%) rotateX(-90deg) rotateY(-90deg)',
+						0.15: 'perspective( 600px ) translateX(0%) rotateX(0deg) rotateY(0deg)',
+						0.95: 'perspective( 600px ) translateX(0%) rotateX(0deg) rotateY(0deg)',
+						to: 'perspective( 600px ) translateX(-200%) rotateX(90deg) rotateY(90deg)',
+						timing: 'ease-out-quad'
+					}					
+				});
+
+				popcorn.typist({
+					start: 9,
+					end: 16,
+					target: 'text-container',
+					html: '<div>Popcorn Base Plugin is: a fast and easy way to build powerful and robust Popcorn plugins.</div>',
+					progress: {
+						0.13: 0,
+						0.7: 1
+					}
+				});
+
+				popcorn.style({
+					start: 16,
+					end: 24,
+					target: 'bullet1',
+					display: 'block',
+					'-*-transform': {
+						from: 'translateX(200%)',
+						0.2: 'translateX(0%)',
+						timing: 'bounce(10, 0.07)'
+					}					
+				});
+
+				popcorn.style({
+					start: 17,
+					end: 24,
+					target: 'bullet2',
+					display: 'block',
+					'-*-transform': {
+						from: 'translateX(200%)',
+						0.2: 'translateX(0%)',
+						timing: 'bounce(10, 0.07)'
+					}					
+				});
+
+				popcorn.style({
+					start: 18,
+					end: 24,
+					target: 'bullet3',
+					display: 'block',
+					'-*-transform': {
+						from: 'translateX(200%)',
+						0.2: 'translateX(0%)',
+						timing: 'bounce(10, 0.07)'
+					}					
+				});
+
+				popcorn.style({
+					start: 19,
+					end: 24,
+					target: 'bullet4',
+					display: 'block',
+					'-*-transform': {
+						from: 'translateX(200%)',
+						0.2: 'translateX(0%)',
+						timing: 'bounce(10, 0.07)'
+					}					
+				});
+
+				popcorn.style({
+					start: 20,
+					end: 24,
+					target: 'bullet5',
+					display: 'block',
+					'-*-transform': {
+						from: 'perspective( 600px ) translateX(200%) rotateX(360deg)',
+						0.3: 'perspective( 600px ) translateX(0%) rotateX(0deg)',
+						timing: 'ease-out-quint'
+					}					
+				});
+
+				popcorn.words({
+					start: 24,
+					end: 28,
+					text: 'Keyframes!',
+					width: '100%',
+					top: {
+						from: '0%',
+						0.1: '40%',
+						timing: 'ease-out-cubic'
+					},
+					'font-size': '60px',
+					'text-align': 'center',
+					color: '#676767'
+
+				});
+
+				popcorn.style({
+					start: 24,
+					end: 28,
+					'-*-transform-origin': 'center center',
+					'-*-transform': {
+						from: 'scale(1) translate(0%, 0%) rotateZ(0deg)',
+						0.25: 'scale(0.2) translate(-180%, -180%) rotateZ(360deg)',
+						0.4: 'scale(0.2) translate(180%, -180%) rotateZ(720deg)',
+						0.6: 'scale(0.2) translate(180%, 180%) rotateZ(1080deg)',
+						0.8: 'scale(0.2) translate(-180%, 180%) rotateZ(0deg)',
+						to: 'scale(1) translate(0%, 0%) rotateZ(1440deg)',
+						timing: 'ease-out-quint'
+					}					
+				});
+
+				popcorn.style({
+					start: 28,
+					end: 33,
+					target: 'timing-example',
+					display: 'block',
+					'-*-transform': {
+						from: 'translateY(120%)',
+						0.1: 'translateY(0%)',
+						0.9: 'translateY(0%)',
+						to: {
+							val: 'translateY(120%)',
+							timing: 'ease-in-quint'
+						},
+						timing: 'ease-out-quint'
+					}					
+				});
+
+				popcorn.style({
+					start: 29,
+					end: 33,
+					target: 'linear',
+					'-*-transform': {
+						from: 'translatex(0px)',
+						to: 'translateX(570px)',
+						timing: 'linear'
+					}					
+				});
+
+				popcorn.style({
+					start: 29,
+					end: 33,
+					target: 'ease',
+					'-*-transform': {
+						from: 'translatex(0px)',
+						to: 'translateX(570px)',
+						timing: 'ease'
+					}					
+				});
+
+				popcorn.style({
+					start: 29,
+					end: 33,
+					target: 'ease-in-quad',
+					'-*-transform': {
+						from: 'translatex(0px)',
+						to: 'translateX(570px)',
+						timing: 'ease-in-quad'
+					}					
+				});
+
+				popcorn.style({
+					start: 29,
+					end: 33,
+					target: 'ease-out-sine',
+					'-*-transform': {
+						from: 'translatex(0px)',
+						to: 'translateX(570px)',
+						timing: 'ease-out-sine'
+					}					
+				});
+
+				popcorn.style({
+					start: 33,
+					end: 41,
+					opacity: {
+						from: 1,
+						0.1: 0.6,
+						0.9: 0.6,
+						to: 1,
+						timing: 'ease',
+					}
+				});
+
+				popcorn.typist({
+					start: 33,
+					end: 41,
+					html: 'Animate <b>all</b> css properties...in one line of code.',
+					'padding': '10%',
+					top: '15%',
+					width: '80%',
+					color: '#ddd',
+					'font-size': '40px',
+					'text-shadow': 'black 2px 2px 4px',
+					'text-align': 'center',
+					progress: {
+						from: 0,
+						0.2: 0.59,
+						0.3: 0.59,
+						0.4: 1
+					}
+				});
+
+				popcorn.typist({
+					start: 33,
+					end: 41,
+					html: 'base.animate();',
+					top: '60%',
+					width: '100%',
+					'text-align': 'center',
+					progress: {
+						0.35: 0,
+						0.5: 1
+					},
+					color: {
+						0.6: '#fff',
+						0.7: '#0f0',
+						0.8: '#0ff',
+						1: '#f0f'
+					},
+					'font-size': {
+						0.6: '30px',
+						0.8: '50px',
+						1: '30px'
+					},
+					'text-shadow': {
+						0.6: 'black 4px 4px 2px',
+						0.7: 'black 16px 16px 8px',
+						0.8: 'black -16px 16px 8px',
+						0.9: 'black 16px -16px 8px',
+						1: 'black 4px 4px 2px'
+					}
+				});
+
+				popcorn.words({
+					start: 41,
+					end: 45,
+					text: 'Or anything else...',
+					width: '100%',
+					top: {
+						from: '0%',
+						0.1: '30%',
+						timing: 'ease-out-cubic'
+					},
+					'font-size': '50px',
+					'text-align': 'center',
+					color: '#676767'
+				});
+
+				popcorn.style({
+					start: 41,
+					end: 45,
+					target: 'volume-knob',
+					display: 'block',
+					top: {
+						from: '0%',
+						0.1: '50%',
+						timing: 'ease-out-cubic'
+					},
+					'-*-transform': {
+						0.1: 'rotateZ(40deg)',
+						0.5: 'rotateZ(-200deg)',
+						0.8: 'rotateZ(40deg)',
+						timing: 'ease'
+					}					
+				});
+
+				popcorn.loudness({
+					start: 41,
+					end: 45,
+					volume: {
+						timing: 'ease',
+						0.1: 1,
+						0.5: 0,
+						0.8: 1
+					}
+				});
+
+				popcorn.words({
+					start: 45,
+					end: 48,
+					text: 'It\'s easy',
+					'text-align': 'center',
+					'font-size': '40px',
+					left: {
+						from: '0%',
+						0.1: '30%',
+						0.9: '70%',
+						to: '100%'
+					},
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(-100%)',
+						0.1: 'translateX(-30%)',
+						0.9: 'translateX(-70%)',
+						to: 'translateX(0%)',
+						timing: 'ease-in-out-quad'
+					},
+					top: '30%',
+					color: '#676767'
+				});
+
+				var blah = document.createElement('div');
+				blah.style.position = 'relative';
+				blah.innerHTML = 'Popcorn.plugin(<span class="string">&quot;typist&quot;</span>, <span class="keyword">function</span> (<span class="argument">options</span>) {';
+				popcorn.typist({
+					start: 45,
+					end: 49,
+					html: blah,
+					classes: 'code',
+					progress: {
+						from: 1/blah.textContent.length,
+						0.6: 1,
+						to: 8/blah.textContent.length,
+						timing: 'ease-in-out'
+					},
+					top: '50%',
+					left: '7%',
+					width: '86%',
+//					height: '32px',
+					'padding': '10px',
+					'background-color': 'rgba(100, 100, 100, 0.8)'
+				})
+
+				blah = document.createElement('div');
+				blah.style.position = 'relative';
+				blah.innerHTML = 'Popcorn.basePlugin(<span class="string">&quot;typist&quot;</span>, <span class="keyword">function</span> (<span class="argument">options</span>, <span class="argument">base</span>) {';
+				popcorn.typist({
+					start: 49,
+					end: 53,
+					html: blah,
+					classes: 'code',
+					progress: {
+						from: 8/blah.textContent.length,
+						0.7: 1,
+						timing: 'ease-in-out'
+					},
+					top: '50%',
+					left: '7%',
+					width: '86%',
+//					height: '32px',
+					'padding': '10px',
+					'background-color': 'rgba(100, 100, 100, 0.8)'
+				});
+
+				popcorn.words({
+					start: 53,
+					end: 61,
+					text: 'Can haz unit tests...',
+					'text-align': 'center',
+					'font-size': '40px',
+					left: {
+						from: '0%',
+						0.1: '30%',
+						0.9: '70%',
+						to: '100%'
+					},
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(-100%)',
+						0.1: 'translateX(-30%)',
+						0.9: 'translateX(-70%)',
+						to: 'translateX(0%)',
+						timing: 'ease-in-out-quad'
+					},
+					top: '5%',
+					color: '#ccc',
+					'text-shadow': 'black 2px 2px 4px'
+				});
+
+				popcorn.iframe({
+					start: 54,
+					end: 62,
+					target: 'video-container',
+					src: '../test/',
+					defer: true,
+					width: 800,
+					height: 400,
+					'-*-transform': 'scale(0.8)',
+					'-*-transform-origin': 'top center',
+					'z-index': 200,
+					'top': '20%',
+					border: 'rgba(100, 100, 100, 0.8) solid 6px',
+					'border-radius': '8px',
+					scroll: {
+						0.2: 0,
+						1: 1
+					}
+				});
+
+				popcorn.words({
+					start: 61,
+					end: 64,
+					text: '...and lots and lots and lots of documentation...',
+					'text-align': 'center',
+					'font-size': '40px',
+					left: {
+						from: '0%',
+						0.1: '30%',
+						0.9: '70%',
+						to: '100%'
+					},
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(-100%)',
+						0.1: 'translateX(-30%)',
+						0.9: 'translateX(-70%)',
+						to: 'translateX(0%)',
+						timing: 'ease-in-out-quad'
+					},
+					color: '#CCC',
+					'text-shadow': 'black 2px 2px 4px',
+					top: '5%'
+				});
+
+				popcorn.github({
+					start: 61,
+					end: 66,
+					target: 'video-container',
+					url: 'https://api.github.com/repos/brianchirls/popcorn-base/readme',
+					width: '800px',
+					height: '400px',
+					'-*-transform': 'scale(0.8)',
+					'-*-transform-origin': 'top center',
+					'z-index': 200,
+					'top': '20%',
+					scroll: {
+						0.2: 0,
+						0.95: 1
+					}
+				});
+
+				popcorn.words({
+					start: 64,
+					end: 70,
+					text: 'R. T. F. M.',
+					'text-align': 'center',
+					'font-size': '350px',
+					'font-weight': 'bold',
+					left: {
+						from: '100%',
+						to: '0%'
+					},
+					'-*-transform-origin': 'top center',
+					'-*-transform': {
+						from: 'translateX(0%)',
+						to: 'translateX(-100%)',
+						timing: 'ease-in-out-quad'
+					},
+					color: 'rgba(0, 0, 0, 0.4)',
+					top: '5%'
+				});
+
+				popcorn.words({
+					start: '1:11',
+					end: '1:13',
+					text: 'So check out the examples...',
+					'text-align': 'center',
+					width: '100%',
+					'font-size': '40px',
+					'-*-transform': {
+						from: 'translateY(-200px)',
+						0.2: 'translateY(0px)',
+						0.8: 'translateY(0px)',
+						to: {
+							val: 'translateY(300px)',
+							timing: 'ease-in-quint'
+						},
+						timing: 'ease-out-quint'
+					},
+					top: '40%',
+					color: '#ccc',
+					'text-shadow': 'black 2px 2px 4px'
+				});
+
+				popcorn.words({
+					start: '1:13',
+					end: '1:15',
+					text: '...build some plugins...',
+					'text-align': 'center',
+					width: '100%',
+					'font-size': '40px',
+					'-*-transform': {
+						from: 'translateY(-200px)',
+						0.2: 'translateY(0px)',
+						0.8: 'translateY(0px)',
+						to: {
+							val: 'translateY(300px)',
+							timing: 'ease-in-quint'
+						},
+						timing: 'ease-out-quint'
+					},
+					top: '40%',
+					color: '#ccc',
+					'text-shadow': 'black 2px 2px 4px'
+				});
+
+				popcorn.words({
+					start: '1:15',
+					end: '1:17',
+					text: '...make some art...',
+					'text-align': 'center',
+					width: '100%',
+					'font-size': '40px',
+					'-*-transform': {
+						from: 'translateY(-200px)',
+						0.2: 'translateY(0px)',
+						0.8: 'translateY(0px)',
+						to: {
+							val: 'translateY(300px)',
+							timing: 'ease-in-quint'
+						},
+						timing: 'ease-out-quint'
+					},
+					top: '40%',
+					color: '#ccc',
+					'text-shadow': 'black 2px 2px 4px'
+				});
+
+				popcorn.words({
+					start: '1:17',
+					end: '1:19',
+					text: '...and contribute (code), if you can.',
+					'text-align': 'center',
+					width: '100%',
+					'font-size': '40px',
+					'-*-transform': {
+						from: 'translateY(-200px)',
+						0.2: 'translateY(0px)',
+						0.8: 'translateY(0px)',
+						to: {
+							val: 'translateY(300px)',
+							timing: 'ease-in-quint'
+						},
+						timing: 'ease-out-quint'
+					},
+					top: '40%',
+					color: '#ccc',
+					'text-shadow': 'black 2px 2px 4px'
+				});
+
+				popcorn.style({
+					start: '1:30',
+					end: '1:36.43',
+					'background-color': {
+						from: 'rgba(0,0,0,0)',
+						0.2: 'rgba(0,0,0,1)'
+					},
+					target: 'video-container'
+				});
+				popcorn.style({
+					start: '1:31',
+					end: '1:36.43',
+					opacity: {
+						from: 1, 0.3: 0, timing: 'ease'
+					}
+				});
+
+				popcorn.words({
+					start: '1:32',
+					end: '1:36.43',
+					text: 'Get the code',
+					link: 'https://github.com/brianchirls/popcorn-base/',
+					top: '42%',
+					left: 0,
+					width: '100%',
+					'text-align': 'center',
+					'font-size': '40px',
+					color: '#676767',
+					opacity: {
+						from: 0,
+						0.4: 1,
+						timing: 'ease'
+					}
+				});
+
+				//github buttons
+				popcorn.style({
+					start: '1:32',
+					end: '1:36.43',
+					target: 'github-watch',
+					display: 'inline',
+					//display: 
+					'-*-transform': {
+						from: 'translateX(-1000px)',
+						0.985: 'translateX(0px)',
+						timing: 'ease-out-power(9)'
+					}
+				});
+
+				popcorn.style({
+					start: '1:32',
+					end: '1:36.43',
+					target: 'github-fork',
+					display: 'inline',
+					'-*-transform': {
+						from: 'translate(-1000px, 800px)',
+						0.985: 'translate(0px, 0px)',
+						timing: 'ease-out-power(9)'
+					}
+				});
+
+				popcorn.style({
+					start: '1:32',
+					end: '1:36.43',
+					target: 'github-follow',
+					display: 'inline',
+					'-*-transform': {
+						from: 'translate(1000px, 0px)',
+						0.985: 'translate(0px, 0px)',
+						timing: 'ease-out-power(9)'
+					}
+				});
 			});
 		}());
 		</script>

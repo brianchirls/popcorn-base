@@ -310,10 +310,10 @@ test('makeContainer', function() {
 module('Animation');
 test('animate', function() {
 
-	var popcorn, exp = 3;
+	var popcorn, eventId, exp = 3;
 
 	Popcorn.basePlugin('test', function(options, base) {
-		var eventId, ret = base.animate('prop');
+		var ret = base.animate('prop');
 		ok(ret, 'base.animate returns true when successful');
 		return {
 			start: function(event, options) {
@@ -338,7 +338,7 @@ test('animate', function() {
 		start: 0,
 		end: 1,
 		prop: {
-			from: '1px', to: '2%'
+			from: '1px', to: '2px'
 		}
 	});
 
@@ -379,6 +379,127 @@ test('animated property with non-animated value', function() {
 		start: 0,
 		end: 1,
 		prop: 10
+	});
+
+	eventId = popcorn.getLastTrackEventId();
+	popcorn.removeTrackEvent(eventId);
+
+	popcorn.destroy();
+	Popcorn.removePlugin('test');
+});
+
+asyncTest('animated property with multiple keyframes', function() {
+
+	var popcorn, exp = 2, eventId;
+
+
+	Popcorn.basePlugin('test', function(options, base) {
+		var times = [
+			0.5, 0.75, 1
+		];
+		base.animate('prop');
+		return {
+			start: function(event, options) {
+				equal(this.options.prop, 0, 'Animated property has correct value at start');
+			},
+			frame: function(event, options, t) {
+				var expected;
+				if (t < 0.5) {
+					expected = 2 * t * 10;
+				} else {
+					expected = 10 - (t - 0.5) * 2;
+				}
+				equal(this.options.prop, expected, 'Animated property has correct value at frame ' + t);
+				exp++;
+				expect(exp); //can't predict how many times frame will run
+
+				if (times.length && t < times[0]) {
+					popcorn.currentTime(times.shift());
+				}
+			},
+			end: function(event, options) {
+				equal(this.options.prop, 9, 'Animated property has correct value at end');
+				setTimeout(function() {
+					eventId = popcorn.getLastTrackEventId();
+					popcorn.removeTrackEvent(eventId);
+
+					popcorn.destroy();
+					Popcorn.removePlugin('test');
+					start();
+				}, 0);
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.25);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: {
+			0: 0,
+			0.5: 10,
+			1: 9
+		}
+	});
+
+});
+
+test('animate color', function() {
+
+	var popcorn, exp = 8, eventId;
+	//note: all rgb/rgba values will have collapsed spaces due to rounding
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.animate('rgb');
+		base.animate('rgba');
+		base.animate('hex');
+		base.animate('hexAlpha');
+		return {
+			start: function(event, options) {
+				equal(this.options.rgb, 'rgb(200,128,0)', 'Animated rgb color has correct value at start');
+				equal(this.options.rgba, 'rgba(200,128,0,1)', 'Animated rgba color has correct value at start');
+				equal(this.options.hex, 'rgb(200,128,0)', 'Animated hex color has correct value at start');
+				equal(this.options.hexAlpha, 'rgba(200,128,0,1)', 'Animated hex color with alpha has correct value at start');
+			},
+			frame: function(event, options, t) {
+				exp+=4;
+				expect(exp); //can't predict how many times frame will run
+				equal(this.options.rgb, 'rgb(100,128,100)', 'Animated rgb color has correct value at frame');
+				equal(this.options.rgba, 'rgba(100,128,100,0.5)', 'Animated rgb color has correct value at frame');
+				equal(this.options.hex, 'rgb(100,128,100)', 'Animated hex color has correct value at frame');
+				equal(this.options.hexAlpha, 'rgba(100,128,100,0.5)', 'Animated hex color with alpha has correct value at frame');
+			},
+			end: function(event, options) {
+				equal(this.options.rgb, 'rgb(0,128,200)', 'Animated rgb color has correct value at end');
+				equal(this.options.rgba, 'rgba(0,128,200,0)', 'Animated rgb color has correct value at end');
+				equal(this.options.hex, 'rgb(0,128,200)', 'Animated hex color has correct value at end');
+				equal(this.options.hexAlpha, 'rgba(0,128,200,0)', 'Animated hex color with alpha has correct value at end');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.5);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		rgb: {
+			from: 'rgb(200,128,0)', to: 'rgb(0,128,200)'
+		},
+		rgba: {
+			from: 'rgba(200,128,0,1)', to: 'rgba(0,128,200,0)'
+		},
+		hex: {
+			from: '#C88000', to: '#0080C8'
+		},
+		hexAlpha: {
+			from: '#C88000FF', to: '#0080C800'
+		}
 	});
 
 	eventId = popcorn.getLastTrackEventId();
@@ -429,6 +550,66 @@ test('animate with callback', function() {
 
 	popcorn.destroy();
 	Popcorn.removePlugin('test');
+});
+
+test('timing functions', function() {
+
+	var timingSamples, samples, times, inc, i, timing,
+		target, actual;
+
+	timingSamples = {
+		"linear":[0,0.2,0.4,0.6,0.8,1],
+		"ease-in-quad":[0,0.04,0.16,0.36,0.64,1],
+		"ease-out-quad":[0,0.36,0.64,0.84,0.96,1],
+		"ease-in-out-quad":[0,0.08,0.32,0.68,0.92,1],
+		"ease-in-cubic":[0,0.008,0.064,0.216,0.512,1],
+		"ease-out-cubic":[0,0.488,0.784,0.936,0.992,1],
+		"ease-in-out-cubic":[0,0.032,0.256,0.744,0.968,1],
+		"ease-in-quart":[0,0.0016,0.0256,0.1296,0.4096,1],
+		"ease-out-quart":[0,0.5904,0.8704,0.9744,0.9984,1],
+		"ease-in-out-quart":[0,0.0128,0.2048,0.7952,0.9872,1],
+		"ease-in-quint":[0,0.00032,0.01024,0.07776,0.32768,1],
+		"ease-out-quint":[0,0.67232,0.92224,0.98976,0.99968,1],
+		"ease-in-out-quint":[0,0.00512,0.16384,0.83616,0.99488,1],
+		"ease-in-sine":[0,0.04894348370484647,0.19098300562505255,0.412214747707527,0.6909830056250525,1],
+		"ease-out-sine":[0,0.3090169943749474,0.5877852522924731,0.8090169943749475,0.9510565162951535,1],
+		"ease-in-out-sine":[0,0.09549150281252627,0.3454915028125263,0.6545084971874737,0.9045084971874737,1],
+		"ease-in-exp":[0,0.00390625,0.015625,0.0625,0.25,1],
+		"ease-out-exp":[0,0.75,0.9375,0.984375,0.99609375,1],
+		"ease-in-out-exp":[0,0.0078125,0.125,0.875,0.9921875,1],
+		"ease-in-circ":[0,0.020204102886728803,0.08348486100883201,0.2,0.4,1],
+		"ease-out-circ":[0,0.6,0.8,0.9165151389911681,0.9797958971132712,1],
+		"ease-in-out-circ":[0,0.041742430504416006,0.2,0.8,0.958257569495584,1]
+	};
+
+	inc = 1 / (timingSamples.linear.length - 1);
+	times = timingSamples.linear;
+
+	for (timing in timingSamples) {
+		fn = Popcorn.basePlugin.timing[timing]();
+		samples = timingSamples[timing];
+		for (i = 0; i < samples.length; i++) {
+			target = samples[i];
+			actual = fn(inc * i);
+			ok(Math.abs(target - actual) < 1e-4, timing + ' matches at ' + (inc * i) + ' (' + actual + ' ~= ' + target + ')');
+		}
+	}
+
+	/*
+	todo: tests for
+		step-start
+		step-end
+		cubic-bezier
+		ease
+		ease-in
+		ease-in-out
+		ease-out
+		ease-in-power
+		ease-in-out-power
+		ease-out-power
+		bounce
+		and custom
+	*/
 });
 
 module('Utilities');
