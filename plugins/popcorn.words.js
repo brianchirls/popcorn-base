@@ -28,6 +28,7 @@
 			styleSheet.appendChild(
 				document.createTextNode(
 					'.popcorn-words { display: none; }\n' +
+					'.popcorn-words > a { color: inherit; }\n' +
 					'.popcorn-words.active { display: block; }\n'
 			));
 			document.head.appendChild(styleSheet);
