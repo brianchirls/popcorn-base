@@ -285,98 +285,170 @@
 		}
 */
 		setupFn = definition._setup;
-
-		definition._setup = function(options) {
-			if (typeof setupFn === 'function') {
+		if (typeof setupFn === 'function') {
+			definition._setup = function(options) {
 				setupFn.call(me, options);
-			}
-			if (typeof me.onSetup === 'function') {
-				try {
-					me.onSetup.call(me, options);
-				} catch (e) {
-					logError(e);
+				if (typeof me.onSetup === 'function') {
+					try {
+						me.onSetup.call(me, options);
+					} catch (e) {
+						logError(e);
+					}
 				}
-			}
-		};
+			};
+		} else {
+			definition._setup = function(options) {
+				if (typeof me.onSetup === 'function') {
+					try {
+						me.onSetup(options);
+					} catch (e) {
+						logError(e);
+					}
+				}
+			};
+		}
 
 		startFn = definition.start;
-		definition.start = function(event, options) {
-			current = true;
-			started = true;
-			updateAnimations.call(me, 0);
-			if (typeof startFn === 'function') {
+		if (typeof startFn === 'function') {
+			definition.start = function(event, options) {
+				current = true;
+				started = true;
+				updateAnimations.call(me, 0);
 				startFn.call(me, event, options);
-			}
-			if (typeof me.onStart === 'function') {
-				try {
-					me.onStart.call(me, options);
-				} catch (e) {
-					logError(e);
-				}
-			}
-		};
-
-		frameFn = definition.frame;
-		definition.frame = function(event, options, time) {
-			if (started) {
-				updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
-				if (typeof frameFn === 'function') {
-					frameFn.call(me, event, options, time);
-				}
-				if (typeof me.onFrame === 'function') {
+				if (typeof me.onStart === 'function') {
 					try {
-						me.onFrame.call(me, options, time);
+						me.onStart.call(me, options);
 					} catch (e) {
 						logError(e);
 					}
 				}
-			}
-		};
+			};
+		} else {
+			definition.start = function(event, options) {
+				current = true;
+				started = true;
+				updateAnimations.call(me, 0);
+				if (typeof me.onStart === 'function') {
+					try {
+						me.onStart(options);
+					} catch (e) {
+						logError(e);
+					}
+				}
+			};
+		}
+		
+		frameFn = definition.frame;
+		if (typeof frameFn === 'function') {
+			definition.frame = function(event, options, time) {
+				if (started) {
+					updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
+					frameFn.call(me, event, options, time);
+					if (typeof me.onFrame === 'function') {
+						try {
+							me.onFrame.call(me, options, time);
+						} catch (e) {
+							logError(e);
+						}
+					}
+				}
+			};
+		} else {
+			definition.frame = function(event, options, time) {
+				if (started) {
+					updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
+					if (typeof me.onFrame === 'function') {
+						try {
+							me.onFrame(options);
+						} catch (e) {
+							logError(e);
+						}
+					}
+				}
+			};
+		}
 		
 		endFn = definition.end;
-		definition.end = function(event, options) {
-			if (started) {
-				updateAnimations.call(me, 1);
-				if (typeof me.onEnd === 'function') {
+		if (typeof endFn === 'function') {
+			definition.end = function(event, options) {
+				if (started) {
+					updateAnimations.call(me, 1);
+					if (typeof me.onEnd === 'function') {
+						try {
+							me.onEnd.call(me, options);
+						} catch (e) {
+							logError(e);
+						}
+					}
+					endFn.call(me, event, options);
+					started = false;
+				}
+				current = false;
+			};
+		} else {
+			definition.end = function(event, options) {
+				if (started) {
+					updateAnimations.call(me, 1);
+					if (typeof me.onEnd === 'function') {
+						try {
+							me.onEnd(options);
+						} catch (e) {
+							logError(e);
+						}
+					}
+				}
+				started = false;
+				current = false;
+			};
+		}
+
+		teardownFn = definition._teardown;
+		if (typeof teardownFn === 'function') {
+			definition._teardown = function(options) {
+				var parent, i;
+				if (typeof me.onTeardown === 'function') {
 					try {
-						me.onEnd.call(me, options);
+						me.onTeardown.call(me, options);
 					} catch (e) {
 						logError(e);
 					}
 				}
-				if (typeof endFn === 'function') {
-					endFn.call(me, event, options);
-				}
-				started = false;
-			}
-			current = false;
-		};
-
-		teardownFn = definition._teardown;
-		definition._teardown = function(options) {
-			var parent, i;
-			if (typeof me.onTeardown === 'function') {
-				try {
-					me.onTeardown.call(me, options);
-				} catch (e) {
-					logError(e);
-				}
-			}
-			if (typeof teardownFn === 'function') {
 				teardownFn.call(me, options);
-			}
-			if (me.container) {
-				parent = me.container.parentNode;
-				if (parent) {
-					parent.removeChild(me.container);
+				if (me.container) {
+					parent = me.container.parentNode;
+					if (parent) {
+						parent.removeChild(me.container);
+					}
+					delete me.container;
 				}
-				delete me.container;
-			}
-			i = allEvents.indexOf(me);
-			if (i <= 0) {
-				allEvents.splice(i, 1);
-			}
-		};
+				i = allEvents.indexOf(me);
+				if (i <= 0) {
+					allEvents.splice(i, 1);
+				}
+			};
+		} else {
+			definition._teardown = function(options) {
+				var parent, i;
+				if (typeof me.onTeardown === 'function') {
+					try {
+						me.onTeardown(options);
+					} catch (e) {
+						logError(e);
+					}
+				}
+				if (me.container) {
+					parent = me.container.parentNode;
+					if (parent) {
+						parent.removeChild(me.container);
+					}
+					delete me.container;
+				}
+				i = allEvents.indexOf(me);
+				if (i <= 0) {
+					allEvents.splice(i, 1);
+				}
+			};
+		}
 	};
 
 
