@@ -160,7 +160,7 @@ and `end` time).
 
 The first argument `tag` specifies the tag name with which to create the
 element. If this is missing or evaluates to false, the default is `'div'`.
-The second argument `insert`, if is false (but not undefined), will
+The second argument `insert`, if false (but not undefined), will
 prevent the insertion of the container element into the DOM.
 
 	Popcorn.basePlugin('myplugin', function(options, base) {
