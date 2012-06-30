@@ -18,6 +18,7 @@ argument names and behaviors.
 - Easily animate parameters in `frame` method, with keyframes and multiple tweening functions
 - Provide access to normalized data for certain arguments
 - Automatically clean up container element on `_teardown`
+- Enable any CSS parameter names to be mapped directly to style of container element
 - Utility: parse out array/object arguments from JSON or delimited strings
 - Utility: cross-browser addClass/removeClass shim (no external libraries required)
 
@@ -26,7 +27,6 @@ argument names and behaviors.
 - Convert animations to CSS when available and appropriate
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
-- Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
 
 ## Usage
 
