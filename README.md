@@ -471,7 +471,7 @@ Animation accelerates towards and end bounces against it multiple times like a b
 
 ###### Parameters
 
-`gravity` - Rate of acceleration towards the end point. Since the animation scales to the duration of the Popcorn event, you will probably need to play around with this value until you find the setting that looks good. Must be a number greater than zero.
+`gravity` - Rate of acceleration towards the end point. Since the animation scales to the duration of the Popcorn event, you will probably need to play around with this value until you find the setting that looks good. Must be a number greater than zero. A `gravity` value of 2.0 will make the first "drop" from 0 to 1 take the entire time of the animation.
 
 `bounce` - A number from 0 to 1 that represents the "height" of each bounce. When set to 0, the animation will accelerate to the end and then stop. At 1, the animation will bounce without diminishing until the end of the event (and stop abruptly).
 
