@@ -21,6 +21,7 @@ argument names and behaviors.
 - Easily animate parameters in `frame` method, with keyframes and multiple tweening functions
 - Provide access to normalized data for certain arguments
 - Automatically clean up container element on `_teardown`
+- Enable any CSS parameter names to be mapped directly to style of container element
 - Utility: parse out array/object arguments from JSON or delimited strings
 - Utility: cross-browser addClass/removeClass shim (no external libraries required)
 
@@ -29,7 +30,6 @@ argument names and behaviors.
 - Convert animations to CSS when available and appropriate
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
-- Apply absolute positioning to container element (`top`, `left`, `bottom`, `right`)
 
 ## Usage
 
@@ -163,7 +163,7 @@ and `end` time).
 
 The first argument `tag` specifies the tag name with which to create the
 element. If this is missing or evaluates to false, the default is `'div'`.
-The second argument `insert`, if is false (but not undefined), will
+The second argument `insert`, if false (but not undefined), will
 prevent the insertion of the container element into the DOM.
 
 	Popcorn.basePlugin('myplugin', function(options, base) {
@@ -299,7 +299,7 @@ If a DOM Element is supplied in place of the callback function, `animate` will i
 		/* etc.... */
 	});
 
-If no property name is supplied, and the only parameter is a DOM Element, *all* styles specified in the event's options will be animated.
+If no property name is supplied, and the only parameter is a DOM Element, *all* styles specified in the event's options will be animated. When `base.animate()` is called with no parameter, all styles are animated on the container element, if it exists.
 
 	Popcorn.basePlugin('myplugin', function(options, base) {
 		base.makeContainer();
@@ -474,7 +474,7 @@ Animation accelerates towards and end bounces against it multiple times like a b
 
 ###### Parameters
 
-`gravity` - Rate of acceleration towards the end point. Since the animation scales to the duration of the Popcorn event, you will probably need to play around with this value until you find the setting that looks good. Must be a number greater than zero.
+`gravity` - Rate of acceleration towards the end point. Since the animation scales to the duration of the Popcorn event, you will probably need to play around with this value until you find the setting that looks good. Must be a number greater than zero. A `gravity` value of 2.0 will make the first "drop" from 0 to 1 take the entire time of the animation.
 
 `bounce` - A number from 0 to 1 that represents the "height" of each bounce. When set to 0, the animation will accelerate to the end and then stop. At 1, the animation will bounce without diminishing until the end of the event (and stop abruptly).
 
