@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Popcorn Bounce animation example</title>
+		<style>
+			body {
+				font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				overflow: hidden;
+				font-size: 20px;
+			}
+
+			#video-container {
+				margin: 0 auto;
+				width: 800px;
+				height: 450px;
+				position: relative;
+				overflow: hidden;
+				border: #676767 solid 1px;
+				background-color: '#D1D1D1'
+			}
+
+			#text-container {
+				margin: 0 auto;
+				width: 800px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="video-container">
+			<video id="video" width="800" height="450" preload controls>
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
+				<source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
+			</video>
+		</div>
+		<div id="text-container">
+			<p>Code and documentation at <a href="https://github.com/brianchirls/popcorn-base/">https://github.com/brianchirls/popcorn-base/</a></p>
+		</div>
+		<script type="text/javascript" src="../external/popcorn.js"></script>
+		<script type="text/javascript" src="../popcorn-base.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.typist.js"></script>
+		<script type="text/javascript">
+		(function(){
+
+			var popcorn = Popcorn('#video', {
+				frameAnimation: true
+			});
+
+			popcorn.typist({
+				start: 0,
+				end: 6,
+				target: 'text-container',
+				html: '<p>Type <span style="font-style: italic; font-family: Garamond;">rich text</span> with the <code style="color: darkred;">html</code> parameter.</p>',
+				progress: {
+					from: 0,
+					0.6: 1,
+					timing: 'ease-in-cubic'
+				}
+			});
+
+			popcorn.typist({
+				start: 6,
+				end: 16,
+				target: 'text-container',
+				text: 'Type plain text with the "text" parameter. !@#$%^&*()<>":;./?<~` This is safe here: <' + 'script> alert("You are hacked!"); <' + '/script>',
+				progress: {
+					from: 0,
+					0.8: 1
+				}
+			});
+
+			var div = document.createElement('div');
+			div.innerHTML = 'Or you can pass a DOM element to the <code style="color: darkred;">html</code> parameter.';
+
+			popcorn.typist({
+				start: 16,
+				end: 22,
+				target: 'text-container',
+				html: div,
+				progress: {
+					from: 0,
+					0.5: 1,
+					timing: 'ease-in-out-sine'
+				}
+			});
+		}());
+		</script>
+	</body>
+</html>
