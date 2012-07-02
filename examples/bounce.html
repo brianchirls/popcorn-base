@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Popcorn Bounce animation example</title>
+		<style>
+			body {
+				font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				overflow: hidden;
+				font-size: 20px;
+			}
+
+			#video-container {
+				margin: 0 auto;
+				width: 800px;
+				height: 450px;
+				position: relative;
+				overflow: hidden;
+				border: #676767 solid 1px;
+				background-color: '#D1D1D1'
+			}
+
+			#video-container > * {
+				z-index: 300;
+			}
+
+			#video {
+				z-index: 100;
+				position: absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="video-container">
+			<video id="video" width="800" height="450" preload controls>
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.webm" type="video/webm" />
+				<source src="http://videos.mozilla.org/serv/webmademovies/popcornsite.mp4" type="video/mp4" />
+				<source src="http://mozillapopcorn.org/wp-content/themes/popcorn/video/popcornsite.ogv" type="video/ogg" />
+			</video>
+		</div>
+		<script type="text/javascript" src="../external/popcorn.js"></script>
+		<script type="text/javascript" src="../popcorn-base.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.words.js"></script>
+		<script type="text/javascript">
+		(function(){
+
+			var popcorn = Popcorn('#video', {
+				frameAnimation: true
+			});
+
+			popcorn.words({
+				start: 0,
+				end: 8,
+				target: 'video-container',
+				text: 'Bounce!',
+				left: '20%',
+				bottom: {
+					from: '90%',
+					to: '0%',
+					timing: 'bounce(200)'
+				}
+			});
+		}());
+		</script>
+	</body>
+</html>
