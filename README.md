@@ -296,7 +296,7 @@ If a DOM Element is supplied in place of the callback function, `animate` will i
 		/* etc.... */
 	});
 
-If no property name is supplied, and the only parameter is a DOM Element, *all* styles specified in the event's options will be animated.
+If no property name is supplied, and the only parameter is a DOM Element, *all* styles specified in the event's options will be animated. When `base.animate()` is called with no parameter, all styles are animated on the container element, if it exists.
 
 	Popcorn.basePlugin('myplugin', function(options, base) {
 		base.makeContainer();
