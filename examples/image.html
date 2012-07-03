@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Popcorn Bounce animation example</title>
+		<style>
+			body {
+				font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				overflow: hidden;
+				font-size: 20px;
+			}
+
+			#video {
+				margin: 0 auto;
+				width: 320px;
+				height: 240px;
+				position: absolute;
+				/*overflow: hidden; */
+				top: 0;
+				left: 0;
+			}
+
+			#video > * {
+				z-index: 300;
+			}
+
+			#image-container {
+				margin: 0 auto;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				overflow: hidden;
+				top: 0;
+				left: 0;
+				background-color: black;
+			}
+
+			.popcorn-image {
+				margin: 0 auto;
+				min-height: 100%;
+				min-width: 100%;
+				width: auto;
+				height: auto;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="image-container"></div>
+		<div id="video" style="width: 320px; height: 240px;"></div>
+		<script type="text/javascript" src="../external/popcorn.js"></script>
+		<script type="text/javascript" src="../external/popcorn.player.js"></script>
+		<script type="text/javascript" src="../external/popcorn.youtube.js"></script>
+		<script type="text/javascript" src="../popcorn-base.js"></script>
+		<script type="text/javascript" src="../plugins/popcorn.image.js"></script>
+		<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+
+			var popcorn = Popcorn.youtube('#video',
+				'http://www.youtube.com/watch?v=Z-k72hKtW10', {
+				frameAnimation: true
+			});
+
+
+			popcorn.defaults('image', {
+				target: 'image-container',
+				opacity: {
+					from: 0,
+					0.33333333333333333333333: 1
+				},
+				'-*-transform': {
+					from: 'scale(1)',
+					to: 'scale(1.2)'
+				}
+			});
+
+			popcorn.image({
+				start: 0,
+				end: 8 + 4,
+				src: 'http://cache.daylife.com/imageserve/06pa6AW0C14Rt/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 8,
+				end: 16 + 4,
+				src: 'http://cache.daylife.com/imageserve/09uAa4V1BB3Ep/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 16,
+				end: 24 + 4,
+				src: 'http://cache.daylife.com/imageserve/0buP6KN6M3bZb/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 24,
+				end: 32 + 4,
+				src: 'http://cache.daylife.com/imageserve/08KtfX13BR61A/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 32,
+				end: 40 + 4,
+				src: 'http://cache.daylife.com/imageserve/02hr1IAd1Xaia/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 40,
+				end: 48 + 4,
+				src: 'http://cache.daylife.com/imageserve/09Sb7zAdWAfBH/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 48,
+				end: 56 + 4,
+				src: 'http://cache.daylife.com/imageserve/0gEGf1QdM792j/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 56,
+				end: 64 + 4,
+				src: 'http://cache.daylife.com/imageserve/07d0beV05K5rD/1000x.jpg'
+			});
+			popcorn.image({
+				start: 64,
+				end: 72 + 4,
+				src: 'http://cache.daylife.com/imageserve/0eL63SvdWmdhj/1000x750.jpg'
+			});
+			popcorn.image({
+				start: 72,
+				end: 80 + 4,
+				src: 'http://cache.daylife.com/imageserve/0g7s7Mp2o21gu/1000x.jpg'
+			});
+			popcorn.image({
+				start: 80,
+				end: 88 + 4,
+				src: 'http://cache.daylife.com/imageserve/0f6ZerKdaB4bY/1000x.jpg'
+			});
+			popcorn.image({
+				start: 88,
+				end: 96 + 4,
+				src: 'http://cache.daylife.com/imageserve/0gLX6df9OfgM4/1000x.jpg'
+			});
+			popcorn.image({
+				start: 96,
+				end: 104 + 4,
+				src: 'http://cache.daylife.com/imageserve/0b8M7NL45McyP/1000x.jpg'
+			});
+			popcorn.image({
+				start: 104,
+				end: 112 + 4,
+				src: 'http://cache.daylife.com/imageserve/0c0Z2vX4ov8yw/1000x.jpg'
+			});
+			popcorn.image({
+				start: 112,
+				end: 120 + 4,
+				src: 'http://cache.daylife.com/imageserve/00ZEaGV1Uag3S/1000x.jpg'
+			});
+			popcorn.image({
+				start: 120,
+				end: 128 + 4,
+				src: 'http://cache.daylife.com/imageserve/0aKTf7rcdM0Y6/1000x.jpg'
+			});
+			popcorn.image({
+				start: 128,
+				end: 136 + 4,
+				src: 'http://cache.daylife.com/imageserve/0ezFcGz9kug4s/1000x.jpg'
+			});
+			popcorn.image({
+				start: 136,
+				end: 144 + 4,
+				src: 'http://cache.daylife.com/imageserve/05YQa5o2x977r/1000x.jpg'
+			});
+			popcorn.image({
+				start: 144,
+				end: 152 + 4,
+				src: 'http://cache.daylife.com/imageserve/0dYVg9FbCI1Zd/1000x.jpg'
+			});
+			popcorn.image({
+				start: 152,
+				end: 160 + 4,
+				src: 'http://cache.daylife.com/imageserve/0btH9TBbvG8QR/1000x.jpg'
+			});
+			popcorn.image({
+				start: 160,
+				end: 168 + 4,
+				src: 'http://cache.daylife.com/imageserve/06Ha06Yf0y8xP/1000x.jpg'
+			});
+			popcorn.image({
+				start: 168,
+				end: 176 + 4,
+				src: 'http://cache.daylife.com/imageserve/09FIdZiaiUcRZ/1000x.jpg'
+			});
+			popcorn.image({
+				start: 176,
+				end: 184 + 4,
+				src: 'http://cache.daylife.com/imageserve/0a000kn8A64FA/1000x.jpg'
+			});
+			popcorn.image({
+				start: 184,
+				end: 192 + 4,
+				src: 'http://cache.daylife.com/imageserve/0gDH4FO0lH61n/1000x.jpg'
+			});
+			popcorn.image({
+				start: 192,
+				end: 200 + 4,
+				src: 'http://cache.daylife.com/imageserve/00pmanv7k58zk/1000x.jpg'
+			});
+
+			//popcorn.play();
+
+		}, false);
+		</script>
+	</body>
+</html>
