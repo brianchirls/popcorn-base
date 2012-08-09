@@ -31,6 +31,25 @@ argument names and behaviors.
 - Handle localization
 - Add `load` event method for retrieving remote resources when needed
 
+## Plugins
+
+Popcorn Base is packaged with a number of Popcorn plugins. Feel free to use these in your compositions or as templates on which to build your own.
+
+- [iframe](https://github.com/brianchirls/popcorn-base/blob/master/plugins/popcorn.iframe.js) - load an external web page in an iframe with `src` parameter or your own html source in the `html` parameter. Animate any styles and `scroll` parameter for vertical scrolling.
+- [loudness](https://github.com/brianchirls/popcorn-base/blob/master/plugins/popcorn.loudness.js) - Sets the volume of the conductor media with the `volume` parameter.
+- [style](https://github.com/brianchirls/popcorn-base/blob/master/plugins/popcorn.style.js) - set and animate any CSS attribute as a parameter to this plugin. `target` (string or DOM element) points to the element on which styles will be set. Leave `target` out to set styles on the main media.
+- [typist](https://github.com/brianchirls/popcorn-base/blob/master/plugins/popcorn.typist.js) - Animate typing any `text` or `html`. Set or animate `progress` parameter to determine how much of the text to type.
+- [words](https://github.com/brianchirls/popcorn-base/blob/master/plugins/popcorn.words.js) Very simple: generate text. Set `link` parameter to a url to make it a link.
+
+To use any of the above plugins, make sure that both popcorn.js and popcorn-base.js are loaded into the web page before the plugin.
+
+## Examples
+
+View the [Demo](http://brianchirls.github.com/popcorn-base/examples/) to see Popcorn Base in action or see individual plugin examples:
+
+- [Bounce](http://brianchirls.github.com/popcorn-base/examples/bounce.html)
+- [Typist](http://brianchirls.github.com/popcorn-base/examples/typist.html)
+
 ## Usage
 
 ### Basic
