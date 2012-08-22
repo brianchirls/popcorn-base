@@ -483,7 +483,7 @@
 					function replaceStyleHyphen(str, letter) {
 						return letter.toUpperCase();
 					}
-					var style;
+					var style, lower;
 
 					if (name === 'src') {
 						//weirdness in chrome
@@ -498,10 +498,13 @@
 					//firefox
 					if (window.getComputedStyle) {
 						style = window.getComputedStyle(element);
-						name = name.toLowerCase();
+						lower = name.toLowerCase();
 						if (style.hasOwnProperty(name) || style[name] !== undefined || style.getPropertyValue(name)) {
 							return name.replace(styleHyphenRegex, replaceStyleHyphen) || false;
+						} else if (style.hasOwnProperty(lower) || style[lower] !== undefined || style.getPropertyValue(lower)) {
+							return lower;
 						}
+
 					}
 				}
 
