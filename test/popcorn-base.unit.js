@@ -206,7 +206,8 @@ test('makeContainer', function() {
 	var popcorn,
 		container,
 		childNodes = [], i,
-		eventIds = [];
+		eventIds = [],
+		other;
 	
 	expect(9);
 	
@@ -221,17 +222,46 @@ test('makeContainer', function() {
 				console.log('teardown!');
 			}
 		};
-		
+	});
+
+	Popcorn.basePlugin('nocontainer', function(options, base) {
 	});
 
 	container = document.getElementById('container');
+	other = document.createElement('div');
 	popcorn = Popcorn('#video');
+
+	popcorn.nocontainer({
+		start: 0,
+		end: 2
+	});
+	eventIds.push(popcorn.getLastTrackEventId());
+
+	popcorn.nocontainer({
+		start: 2,
+		end: 3
+	});
+	eventIds.push(popcorn.getLastTrackEventId());
+
+	popcorn.nocontainer({
+		start: 5,
+		end: 6
+	});
+	eventIds.push(popcorn.getLastTrackEventId());
 
 	popcorn.test({
 		start: 1,
 		end: 2,
 		target: 'container',
 		id: 'order-3'
+	});
+	eventIds.push(popcorn.getLastTrackEventId());
+
+	//make an event on another target to see if it screws up the order
+	popcorn.test({
+		start: 2,
+		end: 3,
+		target: other
 	});
 	eventIds.push(popcorn.getLastTrackEventId());
 
@@ -305,6 +335,7 @@ test('makeContainer', function() {
 	popcorn.destroy();
 	container.innerHTML = '';
 	Popcorn.removePlugin('test');
+	Popcorn.removePlugin('nocontainer');
 });
 
 module('Animation');

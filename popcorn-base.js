@@ -15,6 +15,7 @@
 		BasePopcorn,
 		PopcornBasePlugin,
 		PopcornBaseEvent,
+		allTargets = [],
 		timing,
 		numRegex = /[\-+]?[0-9]*\.?[0-9]+/g,
 		styleHyphenRegex = /\-([a-z])/g,
@@ -163,6 +164,7 @@
 			started = false, // start has been run, but end has not
 			setupFn, startFn, frameFn, endFn, teardownFn,
 			me = this, instanceId, allEvents,
+			allEventsByTarget,
 			basePopcorn = BasePopcorn(popcorn),
 			animatedProperties = {},
 			pauses = [],
@@ -322,6 +324,39 @@
 			me.allEvents = allEvents;
 		}());
 
+		//keep allEvents in order, by target
+		if (me.target) {
+			(function() {
+				var evt, i, t;
+				for (i = 0; i < allTargets.length; i++) {
+					t = allTargets[i];
+					if (t.target === me.target) {
+						allEventsByTarget = t.events;
+						break;
+					}
+				}
+				if (!allEventsByTarget) {
+					allEventsByTarget = [me];
+					allTargets.push({
+						target: me.target,
+						events: allEventsByTarget
+					});
+					return;
+				}
+
+				//sort
+				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
+					evt = allEventsByTarget[i].options;
+					if (evt.start <= options.start ||
+						(evt.start === options.start && evt.end <= options.end)) {
+						
+						break;
+					}
+				}
+				allEventsByTarget.splice(i + 1, 0, me);
+			}());
+		}
+
 		//events
 		this.onSetup = getCallbackFunction(options.onSetup);
 		this.onStart = getCallbackFunction(options.onStart);
@@ -350,9 +385,9 @@
 			if (insert && this.target) {
 				//insert in order
 
-				if (allEvents) {
-					for (i = allEvents.length - 1; i >= 0; i--) {
-						evt = allEvents[i].options;
+				if (allEventsByTarget) {
+					for (i = allEventsByTarget.length - 1; i >= 0; i--) {
+						evt = allEventsByTarget[i].options;
 						if (evt.start < this.options.start ||
 							(evt.start === this.options.start && evt.end < this.options.end)) {
 							
@@ -361,11 +396,11 @@
 					}
 
 					i++;
-					if (allEvents[i] === this) {
+					if (allEventsByTarget[i] === this) {
 						i++;
 					}
-					if (i < allEvents.length && allEvents[i].container.parentNode === this.target) {
-						nextElement = allEvents[i].container || null;
+					if (i < allEventsByTarget.length && allEventsByTarget[i].container.parentNode === this.target) {
+						nextElement = allEventsByTarget[i].container || null;
 					}
 				}
 				
