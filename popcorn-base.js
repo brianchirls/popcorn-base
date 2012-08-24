@@ -22,7 +22,20 @@
 		browserPrefixes = ['', '-moz-', '-webkit-', '-o-', '-ms-'],
 		colorRegex = /#(([0-9a-fA-F]{3,8}))/g,
 		rgbaRegex = /(rgba?)\(\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*(,([0-9]*\.?[0-9]+))?\)/gi,
-		timingRegex = /^([A-Za-z\-]+)(\((([\-+]?[0-9]*\.?[0-9]+)(,\s*([\-+]?[0-9]*\.?[0-9]+))*)\))?$/;
+		timingRegex = /^([A-Za-z\-]+)(\((([\-+]?[0-9]*\.?[0-9]+)(,\s*([\-+]?[0-9]*\.?[0-9]+))*)\))?$/,
+
+		//  Non-public `requestAnimFrame`
+		//  http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+		requestAnimFrame = (function(){
+			return window.requestAnimationFrame ||
+				window.webkitRequestAnimationFrame ||
+				window.mozRequestAnimationFrame ||
+				window.oRequestAnimationFrame ||
+				window.msRequestAnimationFrame ||
+				function( callback, element ) {
+					window.setTimeout( callback, 16 );
+				};
+		}());
 
 	function logError(err) {
 		if (err) {
@@ -31,7 +44,36 @@
 	}
 
 	BasePopcorn = function(popcorn) {
-		var base;
+		var base,
+			activePauses = [],
+			resume,
+			me = this;
+
+		function updatePausedState() {
+			var i, pause,
+				now = Date.now();
+
+			for (i = 0; i < activePauses.length; i++) {
+				pause = activePauses[i];
+				if (pause.expires <= now) {
+					me.pauseOff(pause);
+					i--;
+				} else if (pause.callback) {
+					pause.callback((now - pause.started) / 1000);
+				}
+			}
+
+			if (activePauses.length) {
+				requestAnimFrame(updatePausedState);
+			}
+		}
+
+		function clearPause() {
+			while(activePauses.length) {
+				me.pauseOff(activePauses[0]);
+			}
+		}
+
 		if (window === this || !(this instanceof BasePopcorn) ) {
 			base = BasePopcorn.find(popcorn);
 			if (!base) {
@@ -43,6 +85,37 @@
 		this.popcorn = popcorn;
 		this.id = Popcorn.guid();
 		popcornInstances[this.id] = this;
+
+		this.pauseOn = function(pause) {
+			var now = Date.now();
+			activePauses.push(pause);
+			pause.started = now;
+			pause.expires = now + pause.duration * 1000;
+			if (activePauses.length === 1) {
+				resume = !popcorn.paused();
+				popcorn.pause();
+				updatePausedState();
+			}
+		};
+
+		this.pauseOff = function (pause) {
+			var i;
+
+			if (!activePauses.length) {
+				return;
+			}
+
+			i = activePauses.indexOf(pause);
+			if (i >= 0) {
+				activePauses.splice(i, 1);
+			}
+			if (!activePauses.length && resume) {
+				console.log('resuming');
+				popcorn.play();
+			}
+		};
+
+		popcorn.on('play', clearPause);
 	};
 	
 	BasePopcorn.find = function(instance) {
@@ -60,7 +133,7 @@
 	BasePopcorn.register = function(pluginName, basePlugin) {
 		BasePopcorn.plugins[pluginName] = basePlugin;
 	};
-	
+
 	PopcornBasePlugin = function(pluginName, plugin, manifest) {
 		var definition,
 			me = this;
@@ -92,6 +165,8 @@
 			me = this, instanceId, allEvents,
 			basePopcorn = BasePopcorn(popcorn),
 			animatedProperties = {},
+			pauses = [],
+			pauseTime = 0,
 			setStyles = [],
 			definition, i;
 		
@@ -583,6 +658,94 @@
 			return animateOption(name, callback);
 		};
 
+		this.pause = function (pause, callback) {
+			var i, p, next, total = options.end - options.start;
+
+			function sort(a, b) {
+				return a.at - b.at;
+			}
+
+			if (pauseTime) {
+				//for now, only allow this to run if event hasn't already started playing.
+				//todo: figure out more advanced behavior if we need it.
+				return;
+			}
+
+			//over-write any existing pauses
+			while (pauses.length) {
+				basePopcorn.pauseOff(pauses.shift());
+			}
+
+			if (!total) {
+				//This event is too short for popcorn to catch
+				return;
+			}
+
+			if (typeof pause === 'function') {
+				callback = pause;
+				pause = 0;
+			} else if (typeof callback !== 'function') {
+				callback = null;
+			}
+
+			if (!Popcorn.isArray(pause)) {
+				if (typeof pause === 'object') {
+					pause = [pause];
+				} else {
+					pause = parseFloat(pause);
+					if (isNaN(pause)) {
+						return;
+					}
+					pause = [{
+						at: 0,
+						duration: pause
+					}];
+				}
+			}
+			for (i = 0; i < pause.length; i++) {
+				p = pause[i];
+				if (typeof p === 'object') {
+					p = {
+						at: p.at || 0,
+						duration: p.duration || 2,
+						callback: callback
+					};
+				} else {
+					p = parseFloat(p);
+					if (!isNaN(p)) {
+						p = {
+							at: p,
+							duration: 2,
+							callback: callback
+						};
+					}
+				}
+				pauses.push(p);
+			}
+			pauses.sort(sort);
+			for (i = pauses.length - 1; i >= 0; i--) {
+				p = pauses[i];
+				if (next) {
+					if (Math.abs(next.at - p.at) < 0.05) {
+						//todo: recalculate the range of next
+						p = next;
+						pauses.splice(i, 1);
+					} else if (p.range > 0) {
+						p.range = Math.min(p.range, (next.at - p.at) / 2);
+					} else {
+						p.range = Math.min((next.at - p.at) / 2, 0.25);
+					}
+				} else {
+					if (p.range > 0) {
+						p.range = Math.min(p.range, (total - p.at) / 2);
+					} else {
+						p.range = Math.min(0.25, (total - p.at) / 2);
+					}
+				}
+				next = p;
+			}
+		};
+
 		//run plugin function to get setup, etc.
 		//todo: validate that 'plugin' is a function
 		//todo: try/catch all event functions
@@ -631,12 +794,32 @@
 					logError(e);
 				}
 			}
+
+			pauseTime = 0;
 		};
 		
 		frameFn = definition.frame;
 		definition.frame = function(event, options, time) {
+			var i, p, start, end;
+
 			if (started) {
 				updateAnimations.call(me, (time - me.options.start) / (me.options.end - me.options.start));
+
+				//pause where necessary
+				pauseTime = Math.max(time, pauseTime);
+				for (i = 0; i < pauses.length; i++) {
+					p = pauses[i];
+					start = options.start + p.at;
+					if (start > pauseTime) {
+						break;
+					}
+					end = start + p.range;
+					if (pauseTime < end) {
+						basePopcorn.pauseOn(p);
+						pauseTime = end;
+					}
+				}
+
 				if (typeof frameFn === 'function') {
 					frameFn.call(me, event, options, time);
 				}
@@ -656,6 +839,10 @@
 				var i, s;
 
 				updateAnimations.call(me, 1);
+
+				for (i = 0; i < pauses; i++) {
+					basePopcorn.pauseOff(pauses[i]);
+				}
 
 				for (i = 0; i < setStyles.length; i++) {
 					s = setStyles[i];
