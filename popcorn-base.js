@@ -396,11 +396,13 @@
 					}
 
 					i++;
-					if (allEventsByTarget[i] === this) {
+					evt = allEventsByTarget[i];
+					while (evt && (evt === this || !evt.container)) {
 						i++;
+						evt = allEventsByTarget[i];
 					}
-					if (i < allEventsByTarget.length && allEventsByTarget[i].container.parentNode === this.target) {
-						nextElement = allEventsByTarget[i].container || null;
+					if (evt && evt.container.parentNode === this.target) {
+						nextElement = evt.container || null;
 					}
 				}
 				

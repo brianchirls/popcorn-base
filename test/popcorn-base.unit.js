@@ -233,7 +233,8 @@ test('makeContainer', function() {
 
 	popcorn.nocontainer({
 		start: 0,
-		end: 2
+		end: 2,
+		target: 'container'
 	});
 	eventIds.push(popcorn.getLastTrackEventId());
 
