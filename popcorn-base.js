@@ -23,20 +23,7 @@
 		browserPrefixes = ['', '-moz-', '-webkit-', '-o-', '-ms-'],
 		colorRegex = /#(([0-9a-fA-F]{3,8}))/g,
 		rgbaRegex = /(rgba?)\(\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*,\s*([0-9]*\.?[0-9]+)\s*(,([0-9]*\.?[0-9]+))?\)/gi,
-		timingRegex = /^([A-Za-z\-]+)(\((([\-+]?[0-9]*\.?[0-9]+)(,\s*([\-+]?[0-9]*\.?[0-9]+))*)\))?$/,
-
-		//  Non-public `requestAnimFrame`
-		//  http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-		requestAnimFrame = (function(){
-			return window.requestAnimationFrame ||
-				window.webkitRequestAnimationFrame ||
-				window.mozRequestAnimationFrame ||
-				window.oRequestAnimationFrame ||
-				window.msRequestAnimationFrame ||
-				function( callback, element ) {
-					window.setTimeout( callback, 16 );
-				};
-		}());
+		timingRegex = /^([A-Za-z\-]+)(\((([\-+]?[0-9]*\.?[0-9]+)(,\s*([\-+]?[0-9]*\.?[0-9]+))*)\))?$/;
 
 	function logError(err) {
 		if (err) {
@@ -65,7 +52,7 @@
 			}
 
 			if (activePauses.length) {
-				requestAnimFrame(updatePausedState);
+				setTimeout(updatePausedState, 16);
 			}
 		}
 
