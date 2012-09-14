@@ -103,6 +103,22 @@
 			}
 		};
 
+		this.pauseCancel = function (pauses) {
+			if (pauses) {
+				Popcorn.forEach(pauses, function(p) {
+					var i = activePauses.indexOf(p);
+					if (i >= 0) {
+						activePauses.splice(i, 1);
+					}
+				});
+				return;
+			}
+
+			while (activePauses.length) {
+				activePauses.pop();
+			}
+		};
+
 		popcorn.on('play', clearPause);
 	};
 	
@@ -767,6 +783,10 @@
 			}
 		};
 
+		this.cancelPause = function (all) {
+			basePopcorn.pauseCancel(all ? false : pauses);
+		};
+
 		//run plugin function to get setup, etc.
 		//todo: validate that 'plugin' is a function
 		//todo: try/catch all event functions
@@ -864,13 +884,7 @@
 		teardownFn = definition._teardown;
 		definition._teardown = function(options) {
 			var parent, i;
-			if (typeof me.onTeardown === 'function') {
-				try {
-					me.onTeardown.call(me, options);
-				} catch (e) {
-					logError(e);
-				}
-			}
+			runCallbackFunction(options.onTeardown);
 			if (typeof teardownFn === 'function') {
 				teardownFn.call(me, options);
 			}
