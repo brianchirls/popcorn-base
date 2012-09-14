@@ -159,13 +159,17 @@
 			setStyles = [],
 			definition, i;
 		
-		function getCallbackFunction(fn) {
+		function runCallbackFunction(fn) {
 			if (fn && typeof fn === 'string') {
 				fn = window[fn];
 			}
-			
+
 			if (fn && typeof fn === 'function') {
-				return fn;
+				try {
+					fn.call(me, options);
+				} catch (e) {
+					logError(e);
+				}
 			}
 		}
 
@@ -344,13 +348,6 @@
 			}());
 		}
 
-		//events
-		this.onSetup = getCallbackFunction(options.onSetup);
-		this.onStart = getCallbackFunction(options.onStart);
-		this.onFrame = getCallbackFunction(options.onFrame);
-		this.onEnd = getCallbackFunction(options.onEnd);
-		this.onTeardown = getCallbackFunction(options.onTeardown);
-		
 		this.definition = function() {
 			return definition;
 		};
@@ -787,13 +784,7 @@
 			if (typeof setupFn === 'function') {
 				setupFn.call(me, options);
 			}
-			if (typeof me.onSetup === 'function') {
-				try {
-					me.onSetup.call(me, options);
-				} catch (e) {
-					logError(e);
-				}
-			}
+			runCallbackFunction(options.onSetup);
 		};
 
 		startFn = definition.start;
@@ -811,13 +802,7 @@
 			if (typeof startFn === 'function') {
 				startFn.call(me, event, options);
 			}
-			if (typeof me.onStart === 'function') {
-				try {
-					me.onStart.call(me, options);
-				} catch (e) {
-					logError(e);
-				}
-			}
+			runCallbackFunction(options.onStart);
 
 			pauseTime = 0;
 		};
@@ -847,13 +832,7 @@
 				if (typeof frameFn === 'function') {
 					frameFn.call(me, event, options, time);
 				}
-				if (typeof me.onFrame === 'function') {
-					try {
-						me.onFrame.call(me, options, time);
-					} catch (e) {
-						logError(e);
-					}
-				}
+				runCallbackFunction(options.onFrame);
 			}
 		};
 		
@@ -873,13 +852,7 @@
 					s.e.style[s.name] = s.backup;
 				}
 
-				if (typeof me.onEnd === 'function') {
-					try {
-						me.onEnd.call(me, options);
-					} catch (e) {
-						logError(e);
-					}
-				}
+				runCallbackFunction(options.onEnd);
 				if (typeof endFn === 'function') {
 					endFn.call(me, event, options);
 				}
