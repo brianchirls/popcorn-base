@@ -79,6 +79,11 @@
 			return event.definition();
 		};
 		
+		//copy any properties. this is rare
+		Popcorn.forEach(plugin, function(val, key) {
+			definition[key] = val;
+		});
+
 		Popcorn.plugin(pluginName, definition, manifest);
 
 		//register plugin with our own list
