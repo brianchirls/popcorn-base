@@ -337,6 +337,10 @@ When setting style properties that require experimental vendor prefixes, it is p
 		}
 	})
 
+##### pause (pause, callback)
+
+
+
 ##### toArray (data, delimiters) [static]
 
 A static utility method for retrieving an array from an input of
