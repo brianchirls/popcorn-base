@@ -154,6 +154,10 @@
 
 			return event.definition();
 		};
+
+		Popcorn.forEach(plugin, function(val, key) {
+			definition[key] = val;
+		});
 		
 		Popcorn.plugin(pluginName, definition, manifest);
 
