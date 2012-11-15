@@ -673,8 +673,11 @@
 					logError(e);
 				}
 			}
+
+			//run frame once in case Popcorn doesn't
+			definition.frame(event, options, popcorn.currentTime());
 		};
-		
+
 		frameFn = definition.frame;
 		definition.frame = function(event, options, time) {
 			if (started) {
