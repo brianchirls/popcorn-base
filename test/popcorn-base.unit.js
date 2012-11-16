@@ -24,6 +24,88 @@ test('Core', function() {
 	equal(props - window.popcornProperties, 1, 'Only 1 property added to Popcorn');
 });
 
+test('Update', function() {
+	var popcorn, id,
+		div = document.createElement('div'),
+		firstUpdate = true;
+
+	expect(10);
+
+	div.id = 'update-test';
+	document.body.appendChild(div);
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.makeContainer();
+		return {
+			_update: function(original, changes) {
+				if (firstUpdate) {
+					firstUpdate = false;
+					ok(changes.val === 2, 'Changes includes updated value');
+					ok(true, 'Update function runs');
+				}
+			}
+		};
+	});
+
+	Popcorn.basePlugin('noupdate', function(options, base) {
+		if (options.runTest) {
+			equal(options.val, 1, "Value changes without update method");
+		}
+		return {
+			end: function() {
+				ok(true, 'End method called on non-updating plugin (twice)');
+			},
+			_teardown: function() {
+				ok(true, 'Teardown method called on non-updating plugin (twice)');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video');
+	popcorn.test({
+		start: 0,
+		end: 1,
+		val: 1,
+		target: document.getElementById('container')
+	});
+	id = popcorn.getLastTrackEventId();
+
+	popcorn.test(id, {
+		end: '0:02',
+		val: 2,
+		target: 'container',
+		onUpdate: function() {
+			ok(true, 'onUpdate callback runs');
+			equal(this.options.end, 2, 'Time value converted to seconds');
+			equal(this.target, document.getElementById('container'), "Target string is evaluated again");
+		}
+	});
+
+	popcorn.test(id, {
+		target: 'update-test',
+		onUpdate: function() {
+			equal(this.target, document.getElementById('update-test'), "Target updated and set to DOM element");
+		}
+	});
+
+	popcorn.noupdate({
+		start: 0,
+		end: 1,
+		val: 0
+	});
+	id = popcorn.getLastTrackEventId();
+	popcorn.noupdate(id, {
+		start: 0,
+		end: 1,
+		val: 1
+	});
+
+	popcorn.destroy();
+	document.body.removeChild(div);
+	Popcorn.removePlugin('test');
+	Popcorn.removePlugin('noupdate');
+});
+
 module('Callbacks');
 test('Callbacks - Global function by Name', function() {
 	var cbNames = ['Setup', 'Start', 'Frame', 'End', 'Teardown'],
@@ -58,7 +140,7 @@ test('Callbacks - Global function by Name', function() {
 			};
 		}(c));
 	}
-	
+
 	popcorn = Popcorn('#video', {
 		frameAnimation: true
 	});
@@ -198,6 +280,7 @@ test('target', function() {
 		which: 'missing',
 		target: 'do-not-find-anything'
 	});
+
 	popcorn.destroy();
 	Popcorn.removePlugin('test');
 });
@@ -381,9 +464,9 @@ test('animate', function() {
 	Popcorn.removePlugin('test');
 });
 
-test('animated property with non-animated value', function() {
+asyncTest('animated property with non-animated value', function() {
 
-	var popcorn, exp = 2, eventId;
+	var popcorn, exp = 3, eventId;
 
 
 	Popcorn.basePlugin('test', function(options, base) {
@@ -392,6 +475,9 @@ test('animated property with non-animated value', function() {
 			start: function(event, options) {
 				equal(this.options.prop, 10, 'Animated property has correct value at start');
 			},
+			_update: function() {
+
+			},
 			frame: function(event, options, t) {
 				equal(this.options.prop, 10, 'Animated property has correct value at frame');
 				exp++;
@@ -399,6 +485,16 @@ test('animated property with non-animated value', function() {
 			},
 			end: function(event, options) {
 				equal(this.options.prop, 10, 'Animated property has correct value at end');
+				setTimeout(function() {
+					popcorn.test(eventId, {
+						prop: 8
+					});
+					popcorn.removeTrackEvent(eventId);
+
+					popcorn.destroy();
+					Popcorn.removePlugin('test');
+					start();
+				}, 0);
 			}
 		};
 	});
@@ -410,14 +506,14 @@ test('animated property with non-animated value', function() {
 	popcorn.test({
 		start: 0,
 		end: 1,
-		prop: 10
+		prop: 10,
+		onUpdate: function() {
+			equal(this.options.prop, 8, 'Animated property has correct value after _update');
+		}
 	});
-
 	eventId = popcorn.getLastTrackEventId();
-	popcorn.removeTrackEvent(eventId);
 
-	popcorn.destroy();
-	Popcorn.removePlugin('test');
+	popcorn.currentTime(2);
 });
 
 asyncTest('animated property with multiple keyframes', function() {
@@ -477,6 +573,52 @@ asyncTest('animated property with multiple keyframes', function() {
 		}
 	});
 
+});
+
+test('animated property updated', function() {
+
+	var popcorn, eventId, modified = false;
+
+	expect(2);
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.animate('prop');
+		return {
+			frame: function(event, options, t) {
+				if (modified) {
+					equal(this.options.prop, 2.5, 'Animated property has original value after update');
+				}
+			},
+			_update: function(options, changes) {
+				equal(this.options.prop, 1.5, 'Animated property has original value at beginning of update');
+			}
+		};
+	});
+
+	popcorn = Popcorn('#video', {
+		frameAnimation: true
+	});
+	popcorn.currentTime(0.5);
+	popcorn.test({
+		start: 0,
+		end: 1,
+		prop: {
+			0: 1,
+			1: 2
+		}
+	});
+	eventId = popcorn.getLastTrackEventId();
+
+	modified = true;
+	popcorn.test(eventId, {
+		prop: {
+			0: 2,
+			1: 3
+		}
+	});
+
+	Popcorn.removePlugin('test');
+	popcorn.destroy();
 });
 
 test('animate color', function() {
