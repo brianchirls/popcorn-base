@@ -94,12 +94,13 @@
 		
 		var current = false, // currentTime is between start and end
 			started = false, // start has been run, but end has not
-			setupFn, startFn, frameFn, endFn, teardownFn,
+			setupFn, updateFn, startFn, frameFn, endFn, teardownFn,
 			me = this, instanceId, allEvents,
 			allEventsByTarget,
 			basePopcorn = BasePopcorn(popcorn),
 			animatedProperties = {},
 			setStyles = [],
+			animations = {},
 			definition, i;
 		
 		function getCallbackFunction(fn) {
@@ -194,7 +195,34 @@
 				}
 			}
 		}
-		
+
+		function insertContainer() {
+			var i, evt, nextElement = null;
+			if (allEventsByTarget) {
+				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
+					evt = allEventsByTarget[i].options;
+					if (evt.start < me.options.start ||
+						(evt.start === me.options.start && evt.end < me.options.end)) {
+
+						break;
+					}
+				}
+
+				i++;
+				evt = allEventsByTarget[i];
+				while (evt && (evt === me || !evt.container)) {
+					i++;
+					evt = allEventsByTarget[i];
+				}
+				if (evt && evt.container.parentNode === me.target) {
+					nextElement = evt.container || null;
+				}
+			}
+
+			me.target.insertBefore(me.container, nextElement);
+
+		}
+
 		//just being helpful...
 		this.popcorn = popcorn;
 		this.pluginName = basePlugin.name;
@@ -289,6 +317,7 @@
 
 		//events
 		this.onSetup = getCallbackFunction(options.onSetup);
+		this.onUpdate = getCallbackFunction(options.onUpdate);
 		this.onStart = getCallbackFunction(options.onStart);
 		this.onFrame = getCallbackFunction(options.onFrame);
 		this.onEnd = getCallbackFunction(options.onEnd);
@@ -299,8 +328,6 @@
 		};
 
 		this.makeContainer = function(tag, insert) {
-			var all, i, evt, nextElement = null;
-
 			if (insert === undefined) {
 				insert = true;
 			}
@@ -314,29 +341,7 @@
 
 			if (insert && this.target) {
 				//insert in order
-
-				if (allEventsByTarget) {
-					for (i = allEventsByTarget.length - 1; i >= 0; i--) {
-						evt = allEventsByTarget[i].options;
-						if (evt.start < this.options.start ||
-							(evt.start === this.options.start && evt.end < this.options.end)) {
-							
-							break;
-						}
-					}
-
-					i++;
-					evt = allEventsByTarget[i];
-					while (evt && (evt === this || !evt.container)) {
-						i++;
-						evt = allEventsByTarget[i];
-					}
-					if (evt && evt.container.parentNode === this.target) {
-						nextElement = evt.container || null;
-					}
-				}
-				
-				this.target.insertBefore(this.container, nextElement);
+				insertContainer();
 			}
 			
 			return this.container;
@@ -427,7 +432,18 @@
 					keyframe,
 					keyframes = [];
 
-				if (!name || !options[name]) {
+				if (!name) {
+					return false;
+				}
+
+				if (animations[name]) {
+					//clear old animations
+					delete animatedProperties[name];
+				}
+
+				animations[name] = opts;
+
+				if (!options[name]) {
 					return false;
 				}
 
@@ -695,6 +711,144 @@
 			}
 		};
 		
+		updateFn = definition._update;
+		if (updateFn) {
+			definition._update = function(trackEvent, changes) {
+				var i, target, evt, nextContainer = null, reSort = false;
+				//clean up start/end values and make them numbers
+				if (changes.start === undefined) {
+					changes.start = options.start;
+				} else {
+					changes.start = Popcorn.util.toSeconds(changes.start, popcorn.options.framerate);
+				}
+				if (changes.end === undefined) {
+					changes.end = options.end;
+				} else {
+					changes.end = Popcorn.util.toSeconds(changes.end, popcorn.options.framerate);
+				}
+
+				if (changes.start !== options.start || changes.end !== options.end) {
+					//if start/end changed, re-sort events
+					reSort = true;
+					options.start = changes.start;
+					options.end = changes.end;
+
+					i = allEvents.indexOf(me);
+					allEvents.splice(i, 1);
+					for (i = allEvents.length - 1; i >= 0; i--) {
+						evt = allEvents[i].options;
+						if (evt.start <= options.start ||
+							(evt.start === options.start && evt.end <= options.end)) {
+
+							break;
+						}
+					}
+					allEvents.splice(i + 1, 0, me);
+				}
+
+				//changed target?
+				target = changes.target;
+				if (target){
+					if (typeof target === 'string') {
+						target = document.getElementById(target);
+					}
+					if (target instanceof window.HTMLElement) {
+						if (target !== me.target && me.container) {
+							//re-sort containers
+
+							if (me.container.parentNode) {
+								me.container.parentNode.removeChild(me.container);
+							}
+
+							//remove from old target list
+							i = allEventsByTarget.indexOf(me);
+							if (i >= 0) {
+								allEventsByTarget.splice(i, 1);
+							}
+
+							for (i = allTargets.length - 1; i >=0; i--) {
+								if (allTargets[i].target === target) {
+									break;
+								}
+							}
+							if (i < 0) {
+								allEventsByTarget = {
+									events: [me],
+									target: target
+								};
+								allTargets.push(allEventsByTarget);
+								target.appendChild(me.container);
+							} else {
+								allEventsByTarget = allTargets[i];
+								i = allEventsByTarget.length;
+								if (i) {
+									do {
+										i--;
+										evt = allEventsByTarget[i];
+										if (evt.container) {
+											nextContainer = evt.container;
+										}
+									} while (i >= 0 &&
+										(evt.options.start > options.start ||
+											(evt.options.start === options.start && evt.options.end > options.end)));
+								}
+
+								target.insertBefore(me.container, nextContainer);
+							}
+						} else if (reSort && me.container) {
+							//re-sort container
+							if (me.container.parentNode) {
+								me.container.parentNode.removeChild(me.container);
+							}
+							insertContainer();
+						}
+						changes.target = target;
+						me.target = target;
+					}
+				}
+
+				//update copy of options
+				if (changes.onUpdate !== undefined) {
+					me.onUpdate = getCallbackFunction(changes.onUpdate);
+				}
+				if (changes.onStart !== undefined) {
+					me.onStart = getCallbackFunction(changes.onStart);
+				}
+				if (changes.onFrame !== undefined) {
+					me.onFrame = getCallbackFunction(changes.onFrame);
+				}
+				if (changes.onEnd !== undefined) {
+					me.onEnd = getCallbackFunction(changes.onEnd);
+				}
+				if (changes.onTeardown !== undefined) {
+					me.onTeardown = getCallbackFunction(changes.onTeardown);
+				}
+
+				if (typeof updateFn === 'function') {
+					updateFn.call(me, options, changes);
+				}
+
+				for (i in changes) {
+					me.options[i] = changes[i];
+				}
+
+				for (i in animations) {
+					if (changes[i] !== undefined) {
+						options[i] = changes[i];
+						me.animate(i, animations[i]);
+					}
+				}
+
+				if (typeof me.onUpdate === 'function') {
+					try {
+						me.onUpdate.call(me, options, changes);
+					} catch (e) {
+						logError(e);
+					}
+				}
+			};
+		}
+
 		endFn = definition.end;
 		definition.end = function(event, options) {
 			if (started) {
