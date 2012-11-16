@@ -182,7 +182,7 @@
 			pauses = [],
 			pauseTime = 0,
 			setStyles = [],
-			animations = {},
+			animations = [],
 			definition, i;
 		
 		function runCallbackFunction(fn) {
@@ -430,7 +430,8 @@
 		if `callback` option is provided, will call that on every frame
 		*/
 		this.animate = function(name, opts) {
-			var callback, animated = false, i, styles = {};
+			var callback, animated = false, i, styles = {},
+				animation;
 
 			function animateOption(name, callback) {
 				function fixColors(str) {
@@ -510,18 +511,7 @@
 					keyframe,
 					keyframes = [];
 
-				if (!name) {
-					return false;
-				}
-
-				if (animations[name]) {
-					//clear old animations
-					delete animatedProperties[name];
-				}
-
-				animations[name] = opts;
-
-				if (!options[name]) {
+				if (!name || !options[name]) {
 					return false;
 				}
 
@@ -611,6 +601,7 @@
 				}
 
 				animatedProperties[name] = prop;
+				animation.props.push(name);
 				return true;
 			}
 
@@ -698,6 +689,26 @@
 					name = this.container;
 				}
 			}
+
+			name = name || '';
+			for (i = animations.length - 1; i >= 0; i--) {
+				//clear out old animations for this property
+				animation = animations[i];
+				if (animation.name === name) {
+					while (animation.props.length) {
+						delete animatedProperties[animation.props.pop()];
+					}
+					animations.splice(i, 1);
+					break;
+				}
+			}
+
+			animation = {
+				name: name,
+				opts: opts,
+				props: []
+			};
+			animations.push(animation);
 
 			if (name instanceof window.HTMLElement) {
 				for (i in options) {
@@ -886,7 +897,8 @@
 		updateFn = definition._update;
 		if (updateFn) {
 			definition._update = function(trackEvent, changes) {
-				var i, target, evt, nextContainer = null, reSort = false;
+				var i, j, target, evt, nextContainer = null, reSort = false,
+				animationList = [];
 				//clean up start/end values and make them numbers
 				if (changes.start === undefined) {
 					changes.start = options.start;
@@ -983,16 +995,21 @@
 					updateFn.call(me, options, changes);
 				}
 
-				for (i in changes) {
-					me.options[i] = changes[i];
-					options[i] = changes[i];
+				for (j in changes) {
+					me.options[j] = changes[j];
+					options[j] = changes[j];
 				}
 
-				for (i in animations) {
-					if (changes[i] !== undefined) {
-						me.animate(i, animations[i]);
-					}
+				//copy first, because animate mutates animations
+				for (i = 0; i < animations.length; i++) {
+					animationList.push(animations[i]);
 				}
+
+				for (i = 0; i < animations.length; i++) {
+					me.animate(animations[i].name, animations[i].opts);
+				}
+
+				//todo: update pauses
 
 				runCallbackFunction(options.onUpdate);
 			};
