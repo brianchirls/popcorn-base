@@ -985,11 +985,11 @@
 
 				for (i in changes) {
 					me.options[i] = changes[i];
+					options[i] = changes[i];
 				}
 
 				for (i in animations) {
 					if (changes[i] !== undefined) {
-						options[i] = changes[i];
 						me.animate(i, animations[i]);
 					}
 				}
