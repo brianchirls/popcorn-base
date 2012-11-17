@@ -731,24 +731,26 @@
 		};
 
 		this.pause = function (pause, callback) {
-			var i, p, next, total = options.end - options.start;
+			var i, p, next, total = me.options.end - me.options.start;
 
 			function sort(a, b) {
 				return a.at - b.at;
 			}
 
+			//todo: only allow this to run if event hasn't already started playing.
+			//todo: figure out more advanced behavior if we need it.
+			/*
 			if (pauseTime) {
-				//for now, only allow this to run if event hasn't already started playing.
-				//todo: figure out more advanced behavior if we need it.
 				return;
 			}
+			*/
 
 			//over-write any existing pauses
 			while (pauses.length) {
 				basePopcorn.pauseOff(pauses.shift());
 			}
 
-			if (!total) {
+			if (!total || total < 0.01) {
 				//This event is too short for popcorn to catch
 				return;
 			}
@@ -897,8 +899,9 @@
 		updateFn = definition._update;
 		if (updateFn) {
 			definition._update = function(trackEvent, changes) {
-				var i, j, target, evt, nextContainer = null, reSort = false,
-				animationList = [];
+				var i, j, s,
+					target, evt, nextContainer = null, reSort = false,
+					animationList = [];
 				//clean up start/end values and make them numbers
 				if (changes.start === undefined) {
 					changes.start = options.start;
@@ -916,6 +919,8 @@
 					reSort = true;
 					options.start = changes.start;
 					options.end = changes.end;
+					me.options.start = changes.start;
+					me.options.end = changes.end;
 
 					i = allEvents.indexOf(me);
 					allEvents.splice(i, 1);
@@ -1000,6 +1005,12 @@
 					options[j] = changes[j];
 				}
 
+				//restore backed up styles before re-creating the rules
+				for (i = 0; i < setStyles.length; i++) {
+					s = setStyles[i];
+					s.e.style[s.name] = s.backup;
+				}
+
 				//copy first, because animate mutates animations
 				for (i = 0; i < animations.length; i++) {
 					animationList.push(animations[i]);
@@ -1008,8 +1019,6 @@
 				for (i = 0; i < animations.length; i++) {
 					me.animate(animations[i].name, animations[i].opts);
 				}
-
-				//todo: update pauses
 
 				runCallbackFunction(options.onUpdate);
 			};
