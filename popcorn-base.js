@@ -185,14 +185,14 @@
 			animations = [],
 			definition, i;
 		
-		function runCallbackFunction(fn) {
+		function runCallbackFunction(fn, time) {
 			if (fn && typeof fn === 'string') {
 				fn = window[fn];
 			}
 
 			if (fn && typeof fn === 'function') {
 				try {
-					fn.call(me, options);
+					fn.call(me, options, time);
 				} catch (e) {
 					logError(e);
 				}
@@ -892,7 +892,7 @@
 				if (typeof frameFn === 'function') {
 					frameFn.call(me, event, options, time);
 				}
-				runCallbackFunction(options.onFrame);
+				runCallbackFunction(options.onFrame, time);
 			}
 		};
 		
