@@ -612,8 +612,11 @@
 					}
 					var style, lower;
 
-					if (name === 'src') {
-						//weirdness in chrome
+					if (name === 'src' || //weirdness in chrome
+						name === 'toString' ||
+						typeof element.style[name] === 'function' //any other methods
+						) {
+
 						return false;
 					}
 
