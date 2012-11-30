@@ -1001,8 +1001,11 @@
 				}
 
 				for (j in changes) {
-					me.options[j] = changes[j];
-					options[j] = changes[j];
+					if (changes.hasOwnProperty(j)) {
+						me.options[j] = changes[j];
+						options[j] = changes[j];
+						trackEvent[j] = changes[j];
+					}
 				}
 
 				//restore backed up styles before re-creating the rules
