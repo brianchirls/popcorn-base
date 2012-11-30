@@ -904,7 +904,8 @@
 			definition._update = function(trackEvent, changes) {
 				var i, j, s,
 					target, evt, nextContainer = null, reSort = false,
-					animationList = [];
+					animationList = [],
+					currentTime;
 				//clean up start/end values and make them numbers
 				if (changes.start === undefined) {
 					changes.start = options.start;
@@ -1012,8 +1013,8 @@
 				}
 
 				//restore backed up styles before re-creating the rules
-				for (i = 0; i < setStyles.length; i++) {
-					s = setStyles[i];
+				while (setStyles.length) {
+					s = setStyles.shift();
 					s.e.style[s.name] = s.backup;
 				}
 
@@ -1024,6 +1025,15 @@
 
 				for (i = 0; i < animations.length; i++) {
 					me.animate(animations[i].name, animations[i].opts);
+				}
+
+				currentTime = popcorn.currentTime();
+				if (currentTime >= options.start && currentTime < options.end) {
+					for (i = 0; i < setStyles.length; i++) {
+						s = setStyles[i];
+						s.backup = s.e.style[s.name];
+						s.e.style[s.name] = s.val;
+					}
 				}
 
 				runCallbackFunction(options.onUpdate);
