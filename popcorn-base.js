@@ -1036,7 +1036,7 @@
 					}
 				}
 
-				runCallbackFunction(options.onUpdate);
+				runCallbackFunction(trackEvent.onUpdate);
 			};
 		}
 
