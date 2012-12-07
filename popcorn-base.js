@@ -1522,7 +1522,7 @@
 			}
 
 			return function(t) {
-				var i, b, x, diff;
+				var i, b, x;
 
 				//todo: support bounce >= 1
 
@@ -1550,4 +1550,4 @@
 
 	Popcorn.basePlugin.timing = timing;
 	
-}( window, Popcorn ));
+}( window, window.Popcorn ));
