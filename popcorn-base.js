@@ -305,7 +305,7 @@
 				//sort
 				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
 					evt = allEventsByTarget[i].options;
-					if (evt.start <= options.start ||
+					if (evt.start < options.start ||
 						(evt.start === options.start && evt.end <= options.end)) {
 						
 						break;
