@@ -296,15 +296,7 @@ test('makeContainer', function() {
 	
 	Popcorn.basePlugin('test', function(options, base) {
 		base.makeContainer(options.tag, options.insert);
-		if (base.container && options.id) {
-			base.container.id = options.id;
-		}
-		
-		return {
-			_teardown: function(options) {
-				console.log('teardown!');
-			}
-		};
+		base.container.id = base.container && options.id || '';
 	});
 
 	Popcorn.basePlugin('nocontainer', function(options, base) {
@@ -351,17 +343,17 @@ test('makeContainer', function() {
 
 	popcorn.test({
 		start: 0,
-		end: 1,
+		end: 3,
 		target: 'container',
-		id: 'order-0'
+		id: 'order-2'
 	});
 	eventIds.push(popcorn.getLastTrackEventId());
 
 	popcorn.test({
 		start: 0,
-		end: 3,
+		end: 1,
 		target: 'container',
-		id: 'order-2'
+		id: 'order-0'
 	});
 	eventIds.push(popcorn.getLastTrackEventId());
 

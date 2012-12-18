@@ -286,22 +286,15 @@
 			var i, evt, nextElement = null;
 			if (allEventsByTarget) {
 				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
-					evt = allEventsByTarget[i].options;
-					if (evt.start < me.options.start ||
-						(evt.start === me.options.start && evt.end < me.options.end)) {
+					evt = allEventsByTarget[i];
+					if (evt === me || evt.options.start < me.options.start ||
+						(evt.options.start === me.options.start && evt.options.end < me.options.end)) {
 
 						break;
 					}
-				}
-
-				i++;
-				evt = allEventsByTarget[i];
-				while (evt && (evt === me || !evt.container)) {
-					i++;
-					evt = allEventsByTarget[i];
-				}
-				if (evt && evt.container.parentNode === me.target) {
-					nextElement = evt.container || null;
+					if (evt.container && evt.container.parentNode === me.target) {
+						nextElement = evt.container;
+					}
 				}
 			}
 
@@ -391,7 +384,7 @@
 				//sort
 				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
 					evt = allEventsByTarget[i].options;
-					if (evt.start <= options.start ||
+					if (evt.start < options.start ||
 						(evt.start === options.start && evt.end <= options.end)) {
 						
 						break;

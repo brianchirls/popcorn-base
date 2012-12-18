@@ -11,7 +11,7 @@ argument names and behaviors.
 
 ## Features
 
-- Event callbacks added to `_setup`, `start`, `end`, `frame` and `_teardown`
+- Event callbacks added to `_setup`, `start`, `end`, `frame`, `_update` and `_teardown`
 - Discover target element
 - Clean up plugin definition, filling in a "nop" for missing events
 - Create container element, maintaining time order in DOM
@@ -21,6 +21,7 @@ argument names and behaviors.
 - Enable any CSS parameter names to be mapped directly to style of container element
 - Utility: parse out array/object arguments from JSON or delimited strings
 - Utility: cross-browser addClass/removeClass shim (no external libraries required)
+- Supports Popcorn 1.4 "_update" feature
 
 ### Roadmap:
 - Display/hide container elements using CSS classes rather than element style
