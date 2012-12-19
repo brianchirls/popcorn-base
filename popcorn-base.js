@@ -750,6 +750,8 @@
 					reSort = true;
 					options.start = changes.start;
 					options.end = changes.end;
+					me.options.start = options.start;
+					me.options.end = options.end;
 				}
 
 				//changed target?
