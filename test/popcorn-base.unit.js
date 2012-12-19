@@ -414,6 +414,83 @@ test('makeContainer', function() {
 	Popcorn.removePlugin('nocontainer');
 });
 
+test('Update makeContainer', function() {
+	var popcorn,
+		container,
+		childNodes = [], i,
+		eventId,
+		other;
+
+	expect(5);
+
+	Popcorn.basePlugin('test', function(options, base) {
+		base.makeContainer(options.tag, options.insert);
+		base.container.id = base.container && options.id || '';
+		return {
+			_update: function() {
+
+			}
+		};
+	});
+
+	container = document.getElementById('container');
+	other = document.createElement('div');
+	popcorn = Popcorn('#video');
+
+	popcorn.test({
+		start: 1,
+		end: 2,
+		target: 'container',
+		id: 'order-3'
+	});
+
+	popcorn.test({
+		start: 0,
+		end: 3,
+		target: 'container',
+		id: 'order-1'
+	});
+
+	popcorn.test({
+		start: 0,
+		end: 1,
+		target: 'container',
+		id: 'order-0'
+	});
+
+	popcorn.test({
+		start: 1,
+		end: 3,
+		target: 'container',
+		id: 'order-4'
+	});
+
+	popcorn.test({
+		start: 0,
+		end: 2,
+		target: 'container',
+		id: 'order-2'
+	});
+	eventId = popcorn.getLastTrackEventId();
+
+	popcorn.test(eventId, {
+		end: 4
+	});
+
+	for (i = 0; i < container.childNodes.length; i++) {
+		childNodes.push(container.childNodes[i]);
+	}
+
+	for (i = 0; i < childNodes.length; i++) {
+		equal(childNodes[i].id, 'order-' + i, 'container #' + i + ' in the right order after update');
+	}
+	//clean up
+	popcorn.destroy();
+	container.innerHTML = '';
+	Popcorn.removePlugin('test');
+});
+
+
 module('Animation');
 test('animate', function() {
 

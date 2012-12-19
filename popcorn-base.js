@@ -299,7 +299,87 @@
 			}
 
 			me.target.insertBefore(me.container, nextElement);
+		}
 
+		function insertInPlace(target) {
+			var evt, i, t;
+
+			//remove from old position
+			//todo: use binary search insted of indexOf
+			if (allEvents) {
+				//update
+				i = allEvents.indexOf(me);
+				if (i >= 0) {
+					allEvents.splice(i, 1);
+				}
+			} else {
+				allEvents = basePlugin.events[instanceId];
+			}
+
+			//todo: use binary search instead
+			for (i = allEvents.length - 1; i >= 0; i--) {
+				evt = allEvents[i].options;
+				if (evt.start <= options.start ||
+					(evt.start === options.start && evt.end <= options.end)) {
+
+					break;
+				}
+			}
+			allEvents.splice(i + 1, 0, me);
+			me.allEvents = allEvents;
+
+			if (target !== undefined) {
+				if (!(target instanceof window.Element)) {
+					target = null;
+				}
+
+				if (allEventsByTarget) {
+					i = allEventsByTarget.indexOf(me);
+					if (i >= 0) {
+						allEventsByTarget.splice(i);
+					}
+				}
+
+				if (!target) {
+					delete me.target;
+					return;
+				}
+
+				if (target !== me.target) {
+					me.target = target;
+
+					for (i = 0; i < allTargets.length; i++) {
+						t = allTargets[i];
+						if (t.target === me.target) {
+							allEventsByTarget = t.events;
+							break;
+						}
+					}
+					if (!allEventsByTarget) {
+						allEventsByTarget = [me];
+						allTargets.push({
+							target: me.target,
+							events: allEventsByTarget
+						});
+						return;
+					}
+				}
+			}
+
+			if (!allEventsByTarget) {
+				return;
+			}
+
+			//sort
+			for (i = allEventsByTarget.length - 1; i >= 0; i--) {
+				evt = allEventsByTarget[i].options;
+				if (evt.start < options.start ||
+					(evt.start === options.start && evt.end <= options.end)) {
+
+					break;
+				}
+			}
+			allEventsByTarget.splice(i + 1, 0, me);
 		}
 
 		//just being helpful...
@@ -329,70 +409,15 @@
 			}
 		}
 
-		//get target
-		if (typeof options.target === 'string') {
-			this.target = document.getElementById(options.target);
-			if (!this.target) {
-				delete this.target;
-			}
-		} else if (options.target instanceof window.HTMLElement) {
-			this.target = options.target;
-		}
-
 		//add to Plugin's queue of events
 		instanceId = basePopcorn.id;
 		if (!basePlugin.events[instanceId]) {
 			basePlugin.events[instanceId] = [];
 		}
 
-		//keep allEvents in order
-		(function() {
-			var evt, i;
-			allEvents = basePlugin.events[instanceId];
-			for (i = allEvents.length - 1; i >= 0; i--) {
-				evt = allEvents[i].options;
-				if (evt.start <= options.start ||
-					(evt.start === options.start && evt.end <= options.end)) {
-					
-					break;
-				}
-			}
-			allEvents.splice(i + 1, 0, me);
-			me.allEvents = allEvents;
-		}());
-
-		//keep allEvents in order, by target
-		if (me.target) {
-			(function() {
-				var evt, i, t;
-				for (i = 0; i < allTargets.length; i++) {
-					t = allTargets[i];
-					if (t.target === me.target) {
-						allEventsByTarget = t.events;
-						break;
-					}
-				}
-				if (!allEventsByTarget) {
-					allEventsByTarget = [me];
-					allTargets.push({
-						target: me.target,
-						events: allEventsByTarget
-					});
-					return;
-				}
-
-				//sort
-				for (i = allEventsByTarget.length - 1; i >= 0; i--) {
-					evt = allEventsByTarget[i].options;
-					if (evt.start < options.start ||
-						(evt.start === options.start && evt.end <= options.end)) {
-						
-						break;
-					}
-				}
-				allEventsByTarget.splice(i + 1, 0, me);
-			}());
-		}
+		insertInPlace(typeof options.target === 'string' ?
+			document.getElementById(options.target) :
+			options.target);
 
 		this.definition = function() {
 			return definition;
@@ -916,80 +941,22 @@
 					reSort = true;
 					options.start = changes.start;
 					options.end = changes.end;
-					me.options.start = changes.start;
-					me.options.end = changes.end;
-
-					i = allEvents.indexOf(me);
-					allEvents.splice(i, 1);
-					for (i = allEvents.length - 1; i >= 0; i--) {
-						evt = allEvents[i].options;
-						if (evt.start <= options.start ||
-							(evt.start === options.start && evt.end <= options.end)) {
-
-							break;
-						}
-					}
-					allEvents.splice(i + 1, 0, me);
 				}
 
 				//changed target?
-				target = changes.target;
-				if (target){
-					if (typeof target === 'string') {
+				if ('target' in changes) {
+					target = changes.target;
+					if (target && typeof target === 'string') {
 						target = document.getElementById(target);
 					}
-					if (target instanceof window.HTMLElement) {
-						if (target !== me.target && me.container) {
-							//re-sort containers
-
-							if (me.container.parentNode) {
-								me.container.parentNode.removeChild(me.container);
-							}
-
-							//remove from old target list
-							i = allEventsByTarget.indexOf(me);
-							if (i >= 0) {
-								allEventsByTarget.splice(i, 1);
-							}
-
-							for (i = allTargets.length - 1; i >=0; i--) {
-								if (allTargets[i].target === target) {
-									break;
-								}
-							}
-							if (i < 0) {
-								allEventsByTarget = {
-									events: [me],
-									target: target
-								};
-								allTargets.push(allEventsByTarget);
-								target.appendChild(me.container);
-							} else {
-								allEventsByTarget = allTargets[i];
-								i = allEventsByTarget.length;
-								if (i) {
-									do {
-										i--;
-										evt = allEventsByTarget[i];
-										if (evt.container) {
-											nextContainer = evt.container;
-										}
-									} while (i >= 0 &&
-										(evt.options.start > options.start ||
-											(evt.options.start === options.start && evt.options.end > options.end)));
-								}
-
-								target.insertBefore(me.container, nextContainer);
-							}
-						} else if (reSort && me.container) {
-							//re-sort container
-							if (me.container.parentNode) {
-								me.container.parentNode.removeChild(me.container);
-							}
-							insertContainer();
-						}
-						changes.target = target;
-						me.target = target;
+					if (target !== me.target) {
+						reSort = true;
+					}
+				}
+				if (reSort) {
+					insertInPlace(target);
+					if (me.container) {
+						insertContainer();
 					}
 				}
 
