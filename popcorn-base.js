@@ -121,10 +121,10 @@
 
 		popcorn.on('play', clearPause);
 	};
-	
+
 	BasePopcorn.find = function(instance) {
 		var id, bp;
-		
+
 		for (id in popcornInstances) {
 			if (popcornInstances.hasOwnProperty(id)) {
 				bp = popcornInstances[id];
@@ -134,7 +134,7 @@
 			}
 		}
 	};
-	
+
 	BasePopcorn.plugins = {};
 	BasePopcorn.register = function(pluginName, basePlugin) {
 		BasePopcorn.plugins[pluginName] = basePlugin;
@@ -158,7 +158,7 @@
 		Popcorn.forEach(plugin, function(val, key) {
 			definition[key] = val;
 		});
-		
+
 		//copy any properties. this is rare
 		Popcorn.forEach(plugin, function(val, key) {
 			definition[key] = val;
@@ -169,9 +169,9 @@
 		//register plugin with our own list
 		BasePopcorn.register(pluginName, this);
 	};
-	
+
 	PopcornBaseEvent = function(popcorn, basePlugin, options) {
-		
+
 		var current = false, // currentTime is between start and end
 			started = false, // start has been run, but end has not
 			setupFn, updateFn, startFn, frameFn, endFn, teardownFn,
@@ -184,7 +184,7 @@
 			setStyles = [],
 			animations = [],
 			definition, i;
-		
+
 		function runCallbackFunction(fn, time) {
 			if (fn && typeof fn === 'string') {
 				fn = window[fn];
@@ -261,7 +261,7 @@
 						delta = to.t - from.t;
 						timingFn = from.timing || prop.timing;
 						f = timingFn((fraction - from.t) / delta);
-						
+
 						from = from.val;
 						to = to.val;
 						current = [];
@@ -441,7 +441,7 @@
 				//insert in order
 				insertContainer();
 			}
-			
+
 			return this.container;
 		};
 
@@ -921,7 +921,7 @@
 				runCallbackFunction(options.onFrame, time);
 			}
 		};
-		
+
 		updateFn = definition._update;
 		if (updateFn) {
 			definition._update = function(trackEvent, changes) {
@@ -1057,7 +1057,7 @@
 	//'static' utility functions
 	PopcornBaseEvent.prototype.toArray = function(data, delimiters) {
 		var out;
-		
+
 		if (data === undefined) {
 			return [];
 		}
@@ -1065,7 +1065,7 @@
 		if (Object.prototype.toString.call(data) === '[object Array]') {
 			return data;
 		}
-		
+
 		try {
 			out = JSON.parse(data);
 			if (Object.prototype.toString.call(out) !== '[object Array]') {
@@ -1074,7 +1074,7 @@
 		} catch (e) {
 			out = data;
 		}
-		
+
 		if (delimiters && typeof out === 'string') {
 			try {
 				out = out.split(delimiters);
@@ -1086,7 +1086,7 @@
 			Object.prototype.toString.call(out) !== '[object Array]') {
 			return [out];
 		}
-		
+
 		return out;
 	};
 
@@ -1094,7 +1094,7 @@
 		if (typeof data === 'object') {
 			return data;
 		}
-		
+
 		try {
 			return JSON.parse(data);
 		} catch (e) {
@@ -1104,7 +1104,7 @@
 
 	if (document !== undefined &&
 		!(document.createElement('a')).classList ) {
-			
+
 		PopcornBaseEvent.prototype.addClass = function(element, classes) {
 			var curClasses, i;
 			if (!classes || !element || !element.getAttribute) {
@@ -1114,7 +1114,7 @@
 			classes = PopcornBaseEvent.prototype.toArray(classes, /[\s\t\r\n ]+/);
 			curClasses = element.getAttribute('class') || '';
 			curClasses = curClasses.split(/[\s\t\r\n ]+/);
-			
+
 			for (i = 0; i < classes.length; i++) {
 				if (curClasses.indexOf(classes[i]) < 0) {
 					curClasses.push(classes[i]);
@@ -1141,7 +1141,7 @@
 					curClasses.splice(index, 1);
 				}
 			}
-			
+
 			element.setAttribute('class', curClasses.join(' '));
 		};
 	} else {
@@ -1516,5 +1516,5 @@
 	*/
 
 	Popcorn.basePlugin.timing = timing;
-	
+
 }( window, window.Popcorn ));
