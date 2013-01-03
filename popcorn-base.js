@@ -126,9 +126,11 @@
 		var id, bp;
 		
 		for (id in popcornInstances) {
-			bp = popcornInstances[id];
-			if (bp && bp.popcorn === instance) {
-				return bp;
+			if (popcornInstances.hasOwnProperty(id)) {
+				bp = popcornInstances[id];
+				if (bp && bp.popcorn === instance) {
+					return bp;
+				}
 			}
 		}
 	};
@@ -148,9 +150,7 @@
 
 		definition = function(options) {
 			var popcorn = this,
-				event = new PopcornBaseEvent(popcorn, me, options),
-				all, evt, i,
-				id;
+				event = new PopcornBaseEvent(popcorn, me, options);
 
 			return event.definition();
 		};
@@ -245,39 +245,41 @@
 			var i, j, f, prop, val, from, to, delta, current, timingFn;
 
 			for (i in animatedProperties) {
-				prop = animatedProperties[i];
+				if (animatedProperties.hasOwnProperty(i)) {
+					prop = animatedProperties[i];
 
-				from = findPreviousKeyframe(prop.keyframes, fraction);
-				to = prop.keyframes[from + 1];
-				from = prop.keyframes[from];
-				if (!from) {
-					from = to;
-				}
-
-				if (!to || from === to) {
-					val = prop.str ? join(from.val, prop.str) : from.val[0];
-				} else {
-					delta = to.t - from.t;
-					timingFn = from.timing || prop.timing;
-					f = timingFn((fraction - from.t) / delta);
-					
-					from = from.val;
-					to = to.val;
-					current = [];
-					for (j = 0; j < from.length; j++) {
-						current.push(from[j] + (to[j] - from[j]) * f);
+					from = findPreviousKeyframe(prop.keyframes, fraction);
+					to = prop.keyframes[from + 1];
+					from = prop.keyframes[from];
+					if (!from) {
+						from = to;
 					}
-					if (prop.str) {
-						val = join(current, prop.str);
-						val = val.replace(rgbaRegex, rgbaRound);
+
+					if (!to || from === to) {
+						val = prop.str ? join(from.val, prop.str) : from.val[0];
 					} else {
-						val = current[0];
+						delta = to.t - from.t;
+						timingFn = from.timing || prop.timing;
+						f = timingFn((fraction - from.t) / delta);
+						
+						from = from.val;
+						to = to.val;
+						current = [];
+						for (j = 0; j < from.length; j++) {
+							current.push(from[j] + (to[j] - from[j]) * f);
+						}
+						if (prop.str) {
+							val = join(current, prop.str);
+							val = val.replace(rgbaRegex, rgbaRound);
+						} else {
+							val = current[0];
+						}
 					}
-				}
 
-				me.options[i] = val;
-				if (prop.callback) {
-					prop.callback.call(me, val);
+					me.options[i] = val;
+					if (prop.callback) {
+						prop.callback.call(me, val);
+					}
 				}
 			}
 		}
@@ -398,7 +400,7 @@
 			options.end = Popcorn.util.toSeconds(options.end, popcorn.options.framerate);
 		}
 		if (!options.end && options.end !== 0) {
-			options.end = options['out'] || popcorn.duration() || Number.MAX_VALUE;
+			options.end = options.out || popcorn.duration() || Number.MAX_VALUE;
 		}
 
 		//keep a separate copy of options
@@ -453,10 +455,8 @@
 
 			function animateOption(name, callback) {
 				function fixColors(str) {
-					var matches, colors = {}, i, match;
-
 					function makeRGBA(hex) {
-						var nums, reg, n, i;
+						var nums, n, i;
 
 						n = hex.length;
 						if (n === 4 || n === 5) {
@@ -547,55 +547,57 @@
 				};
 
 				for (i in opt) {
-					val = opt[i];
-					if (i === 'from' && opt[0] === undefined) {
-						i = 0;
-					} else if (i === 'to' && opt[1] === undefined) {
-						i = 1;
-					} else {
-						i = parseFloat(i);
-					}
-
-					if (typeof val === 'object') {
-						timingFn = val[1] || val.timing;
-						val = val[0] === undefined ? val.val : val[0];
-						if (timingFn === opt.timing) {
-							timingFn = prop.timingFn;
+					if (opt.hasOwnProperty(i)) {
+						val = opt[i];
+						if (i === 'from' && opt[0] === undefined) {
+							i = 0;
+						} else if (i === 'to' && opt[1] === undefined) {
+							i = 1;
 						} else {
-							timingFn = makeTimingFunction(timingFn);
+							i = parseFloat(i);
 						}
-					} else {
-						timingFn = false;
-					}
 
-					//convert hex colors to rgb/rgba
-					if (typeof val === 'string') {
-						val = fixColors(val);
-						vals = val.match(numRegex);
-					} else if (typeof val === 'number') {
-						vals = [val];
-					}
-					if (vals && !isNaN(i)) {
-						if (!str && typeof val === 'string') {
-							str = val.split(numRegex);
-							count = vals.length;
-							if (str.length < count) {
-								str.push('');
+						if (typeof val === 'object') {
+							timingFn = val[1] || val.timing;
+							val = val[0] === undefined ? val.val : val[0];
+							if (timingFn === opt.timing) {
+								timingFn = prop.timingFn;
+							} else {
+								timingFn = makeTimingFunction(timingFn);
 							}
+						} else {
+							timingFn = false;
 						}
-						if (vals.length === count) {
-							for (j = 0; j < vals.length; j++) {
-								vals[j] = parseFloat(vals[j], 10);
-							}
 
-							keyframe = {
-								t: i,
-								val: vals
-							};
-							if (timingFn && timingFn !== prop.timing) {
-								keyframe.timing = timingFn;
+						//convert hex colors to rgb/rgba
+						if (typeof val === 'string') {
+							val = fixColors(val);
+							vals = val.match(numRegex);
+						} else if (typeof val === 'number') {
+							vals = [val];
+						}
+						if (vals && !isNaN(i)) {
+							if (!str && typeof val === 'string') {
+								str = val.split(numRegex);
+								count = vals.length;
+								if (str.length < count) {
+									str.push('');
+								}
 							}
-							keyframes.push(keyframe);
+							if (vals.length === count) {
+								for (j = 0; j < vals.length; j++) {
+									vals[j] = parseFloat(vals[j], 10);
+								}
+
+								keyframe = {
+									t: i,
+									val: vals
+								};
+								if (timingFn && timingFn !== prop.timing) {
+									keyframe.timing = timingFn;
+								}
+								keyframes.push(keyframe);
+							}
 						}
 					}
 				}
@@ -649,7 +651,8 @@
 						lower = name.toLowerCase();
 						if (style.hasOwnProperty(name) || style[name] !== undefined || style.getPropertyValue(name)) {
 							return name.replace(styleHyphenRegex, replaceStyleHyphen) || false;
-						} else if (style.hasOwnProperty(lower) || style[lower] !== undefined || style.getPropertyValue(lower)) {
+						}
+						if (style.hasOwnProperty(lower) || style[lower] !== undefined || style.getPropertyValue(lower)) {
 							return lower;
 						}
 
@@ -667,8 +670,8 @@
 
 						//don't set if this is specified elsewhere in options
 						//todo: don't set if it's already been set automagically
-						if (styles[jsName] || jsName && prefixedName !== name &&
-							options[prefixedName]) {
+						if (styles[jsName] ||
+							(jsName && prefixedName !== name && options[prefixedName])) {
 
 							return false;
 						}
@@ -733,7 +736,9 @@
 
 			if (name instanceof window.HTMLElement) {
 				for (i in options) {
-					animated = animateStyle(i, name) || animated;
+					if (options.hasOwnProperty(i)) {
+						animated = animateStyle(i, name) || animated;
+					}
 				}
 				return animated;
 			}
@@ -921,7 +926,7 @@
 		if (updateFn) {
 			definition._update = function(trackEvent, changes) {
 				var i, j, s,
-					target, evt, nextContainer = null, reSort = false,
+					target, reSort = false,
 					animationList = [],
 					currentTime;
 				//clean up start/end values and make them numbers
@@ -946,7 +951,7 @@
 				}
 
 				//changed target?
-				if ('target' in changes) {
+				if (changes.hasOwnProperty('target')) {
 					target = changes.target;
 					if (target && typeof target === 'string') {
 						target = document.getElementById(target);
@@ -1097,7 +1102,7 @@
 		}
 	};
 
-	if (typeof document !== 'undefined' &&
+	if (document !== undefined &&
 		!(document.createElement('a')).classList ) {
 			
 		PopcornBaseEvent.prototype.addClass = function(element, classes) {
