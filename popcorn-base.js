@@ -1105,6 +1105,23 @@
 	if (document !== undefined &&
 		!(document.createElement('a')).classList ) {
 
+		PopcornBaseEvent.prototype.hasClass = function(element, classes) {
+			var curClasses, i;
+			if (!classes || !element || !element.getAttribute) {
+				return;
+			}
+
+			curClasses = element.getAttribute('class') || '';
+			curClasses = curClasses.split(/[\s\t\r\n ]+/);
+
+			for (i = 0; i < curClasses.length; i++) {
+				if (curClasses[i] === classes) {
+					return true;
+				}
+			}
+			return false;
+		};
+
 		PopcornBaseEvent.prototype.addClass = function(element, classes) {
 			var curClasses, i;
 			if (!classes || !element || !element.getAttribute) {
@@ -1145,6 +1162,21 @@
 			element.setAttribute('class', curClasses.join(' '));
 		};
 	} else {
+		PopcornBaseEvent.prototype.hasClass = function(element, classes) {
+			var i;
+
+			if (!element || !element.classList) {
+				return;
+			}
+
+			for (i = 0; i < element.classList.length; i++) {
+				if (element.classList[i] === classes) {
+					return true;
+				}
+			}
+			return false;
+		};
+
 		PopcornBaseEvent.prototype.addClass = function(element, classes) {
 			var c, i;
 
